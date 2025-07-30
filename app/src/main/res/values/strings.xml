@@ -1,0 +1,100 @@
+<resources>
+    <string name="app_name">Gimasio_Force</string>
+    <string name="email">Email</string>
+    <string name="password">Contraseña</string>
+    <string name="forgotPassword">Olvidaste tu contraseña?</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="resetPassword">Enviar Contraseña</string>
+    <string name="invitation">¿Hasta dónde eres capaz de llegar?</string>
+    <string name="acept">He leído y acepto los</string>
+    <string name="terms">términos y condiciones de uso.</string>
+
+    <string name="empty_email">Introduce un email porfaplis</string>
+    <string name="bar_title">Gimnasio Force</string>
+    <string name="invalid_email">mmm parece que el email está mal escrito</string>
+    <string name="default_web_client_id"> 1080953787276-3ssbhire6gubjd97knafs5jtavglpaub.apps.googleusercontent.com</string>
+
+    <string name="google">GOOGLE</string>
+    <string name="facebook">FACEBOOK</string>
+
+    <string name="bar_title_terms">Términos y Condiciones de Uso</string>
+    <string name="terms1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent rhoncus convallis metus at pretium. Vivamus at lacinia leo. Praesent velit elit, suscipit sit amet pulvinar id, imperdiet ac massa. Quisque molestie lectus rhoncus urna tempor, ut lacinia mi tempor. Praesent volutpat, ligula eget lobortis cursus, mauris libero consequat ligula, nec scelerisque erat ipsum tempor justo. Aliquam ornare faucibus augue vel faucibus. Ut sollicitudin commodo tortor eu faucibus. Vestibulum lacinia ligula sed tortor auctor, vitae sollicitudin lorem dapibus. Phasellus sed tincidunt odio.</string>
+    <string name="terms2">Praesent arcu nisi, auctor quis tempor id, vehicula non nulla. Sed a fermentum tellus, quis pharetra lorem. Fusce vehicula libero in ultricies varius. Suspendisse vel velit tortor. Aliquam non nisi eget lectus tempor consectetur sed in magna. Nullam tincidunt, nibh ut sodales suscipit, ante est luctus purus, sed pellentesque ipsum massa et quam. Proin sed sapien ultrices ex aliquet elementum sed et erat. Sed tincidunt felis sapien, a suscipit massa cursus et. Phasellus auctor tellus ac neque maximus accumsan. Morbi sit amet odio nec sapien pharetra elementum maximus id odio. Integer laoreet, neque id efficitur auctor, magna massa consequat justo, quis vehicula ipsum massa at sem. Morbi in ornare sapien, in luctus mauris. </string>
+    <string name="terms3">Sed id libero auctor, lacinia lectus a, consequat nisl. Nam quis suscipit purus. Fusce at congue quam. Etiam congue imperdiet bibendum. Etiam at porttitor ipsum. Donec consectetur sapien in neque tempus tempus. Sed vulputate rutrum ultrices. Praesent in est leo. Suspendisse euismod purus id urna tempus pellentesque. Praesent condimentum nisl sit amet purus pulvinar sagittis. Cras purus felis, hendrerit et ornare ut, molestie id orci. Integer dictum consequat leo, id pretium urna tempus et. Donec nibh ante, laoreet id lorem vitae, vestibulum sollicitudin lorem. </string>
+
+    <string name="running">Correr</string>
+    <string name="record">Historial</string>
+    <string name="menu_premium">Hazte Premium</string>
+    <string name="menu_limpiar">Restablecer Ajustes</string>
+    <string name="menu_salir">Cerrar Sesión</string>
+    <string name="menu_cuenta">Cuenta</string>
+    <string name="menu_anuncio">Anuncio</string>
+    <string name="menu_obtener_oferta">Matricúlate en UTH y obten una oferta</string>
+
+    <string name="nav_hi">Estás listo para dar lo mejor de ti?</string>
+    <string name="user">darius.com</string>
+    <string name="level">Nivel</string>
+    <string name="navigation_drawer_open">Abrir</string>
+    <string name="navigation_drawer_close">Cerrar</string>
+    <string name="bar_title_record">Registros obtenidos</string>
+
+    <string name="orderby_dateZA">Fecha (Recientes primero)</string>
+    <string name="orderby_durationZA">Duracion (Mayores primero)</string>
+    <string name="orderby_distanceZA">Distancia (Mayores primero)</string>
+    <string name="orderby_avgspeedZA">Vel. Prom. (Mayores primero)</string>
+    <string name="orderby_maxspeedZA">Vel. Max. (Mayores primero)</string>
+
+    <string name="orderby_dateAZ">Fecha (Antiguos primero)</string>
+    <string name="orderby_durationAZ">Duracion (Menores primero)</string>
+    <string name="orderby_distanceAZ">Distancia (Menores primero)</string>
+    <string name="orderby_avgspeedAZ">Vel. Prom. (Menores primero)</string>
+    <string name="orderby_maxspeedAZ">Vel. Max. (Menores primero)</string>
+
+    <string name="start">INICIAR</string>
+    <string name="stop">ALTO</string>
+    <string name="finish">Finalizar</string>
+    <string name="rounds">Round 1</string>
+    <string name="time_running">Running Time</string>
+    <string name="time_walking">Walking Time</string>
+    <string name="walking_clock">00:00</string>
+    <string name="init_stop_watch_value">00:00:00</string>
+
+    <string name="hard_volumen">Volumen de Música</string>
+    <string name="soft_volumen">Volumen de Música</string>
+    <string name="notification_volumen">Volumen de Notificaciones</string>
+    <string name="hard_position">00:00:00</string>
+    <string name="hard_duration">01:00:00</string>
+    <string name="soft_position">00:00:00</string>
+    <string name="soft_duration">01:00:00</string>
+
+    <string name="PopUpTotalRuns">Carrera: </string>
+    <string name="PopUpTotalDistance">Kms acumulados: </string>
+    <string name="PopUpTotalTime">Tiempo Total: </string>
+    <string name="NoDataWarning">No hay datos registrados. Recuerda activar el GPS si deseas información de tu carrera</string>
+
+    <string name="PopUpDurationTitle">DURACION</string>
+    <string name="PopUpChallengeTitle">OBJETIVO</string>
+    <string name="PopUpIntervalTitle">INTERVALOS</string>
+    <string name="PopUpDistanceTitle">DISTANCIA</string>
+    <string name="PopUpAvgSpeedTitle">VELOCIDAD PROMEDIO</string>
+    <string name="PopUpMaxSpeedTitle">VELOCIDAD MÁXIMA</string>
+    <string name="PopUpUnevennessTitle">DESNIVEL</string>
+
+    <string name="textNull"></string>
+    <string name="textNoData">-</string>
+
+    <string name="medalDistanceDescription">Distancia [Record Personal]</string>
+    <string name="medalAvgSpeedDescription">Vel. Máx. [Record Personal]</string>
+    <string name="medalMaxSpeedDescription">Vel. Prom. [Record Personal]</string>
+
+    <string name="alertActivationGPSTitle">Permitir acceso a ubicación</string>
+    <string name="alertActivationGPSDescription">Si desea obtener datos de su carrera como la distancia recorrida y la velocidad debe activar el GPS</string>
+    <string name="ignoreActivationGPS">Ignorar</string>
+    <string name="aceptActivationGPS">Activar</string>
+
+    <string name="alertClearPreferencesTitle">¿Quieres borrar tus preferencias de carrera?</string>
+    <string name="alertClearPreferencesDescription">Borraremos los ajustes de carrera (modo y tiempo de intervalos) de tu útlima carrera</string>
+
+
+
+</resources>

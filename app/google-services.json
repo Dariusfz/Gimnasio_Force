@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1080953787276",
+    "project_id": "gimasio-force",
+    "storage_bucket": "gimasio-force.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1080953787276:android:6062c8ee200d1df2d8fca9",
+        "android_client_info": {
+          "package_name": "com.example.gimasio_force"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB39Pm5Al9WOwAM6dFyLRTG6mXezlYnd4k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
