@@ -1,0 +1,149 @@
+<resources>
+    <string name="app_name">Gimasio_Force</string>
+    <string name="email">Email</string>
+    <string name="password">Contraseña</string>
+    <string name="forgotPassword">Olvidaste tu contraseña?</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="resetPassword">Enviar Contraseña</string>
+    <string name="invitation">¿Hasta dónde eres capaz de llegar?</string>
+    <string name="acept">He leído y acepto los</string>
+    <string name="terms">términos y condiciones de uso.</string>
+
+    <string name="empty_email">Introduce un email porfaplis</string>
+    <string name="bar_title">Gimnasio Force</string>
+    <string name="invalid_email">mmm parece que el email está mal escrito</string>
+    <string name="default_web_client_id"> 1080953787276-3ssbhire6gubjd97knafs5jtavglpaub.apps.googleusercontent.com</string>
+
+    <string name="google">GOOGLE</string>
+    <string name="facebook">FACEBOOK</string>
+
+    <string name="bar_title_terms">Términos y Condiciones de Uso</string>
+    <string name="terms1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent rhoncus convallis metus at pretium. Vivamus at lacinia leo. Praesent velit elit, suscipit sit amet pulvinar id, imperdiet ac massa. Quisque molestie lectus rhoncus urna tempor, ut lacinia mi tempor. Praesent volutpat, ligula eget lobortis cursus, mauris libero consequat ligula, nec scelerisque erat ipsum tempor justo. Aliquam ornare faucibus augue vel faucibus. Ut sollicitudin commodo tortor eu faucibus. Vestibulum lacinia ligula sed tortor auctor, vitae sollicitudin lorem dapibus. Phasellus sed tincidunt odio.</string>
+    <string name="terms2">Praesent arcu nisi, auctor quis tempor id, vehicula non nulla. Sed a fermentum tellus, quis pharetra lorem. Fusce vehicula libero in ultricies varius. Suspendisse vel velit tortor. Aliquam non nisi eget lectus tempor consectetur sed in magna. Nullam tincidunt, nibh ut sodales suscipit, ante est luctus purus, sed pellentesque ipsum massa et quam. Proin sed sapien ultrices ex aliquet elementum sed et erat. Sed tincidunt felis sapien, a suscipit massa cursus et. Phasellus auctor tellus ac neque maximus accumsan. Morbi sit amet odio nec sapien pharetra elementum maximus id odio. Integer laoreet, neque id efficitur auctor, magna massa consequat justo, quis vehicula ipsum massa at sem. Morbi in ornare sapien, in luctus mauris. </string>
+    <string name="terms3">Sed id libero auctor, lacinia lectus a, consequat nisl. Nam quis suscipit purus. Fusce at congue quam. Etiam congue imperdiet bibendum. Etiam at porttitor ipsum. Donec consectetur sapien in neque tempus tempus. Sed vulputate rutrum ultrices. Praesent in est leo. Suspendisse euismod purus id urna tempus pellentesque. Praesent condimentum nisl sit amet purus pulvinar sagittis. Cras purus felis, hendrerit et ornare ut, molestie id orci. Integer dictum consequat leo, id pretium urna tempus et. Donec nibh ante, laoreet id lorem vitae, vestibulum sollicitudin lorem. </string>
+
+    <string name="running">Correr</string>
+    <string name="record">Historial</string>
+    <string name="menu_premium">Hazte Premium</string>
+    <string name="menu_limpiar">Restablecer Ajustes</string>
+    <string name="menu_salir">Cerrar Sesión</string>
+    <string name="menu_cuenta">Cuenta</string>
+    <string name="menu_anuncio">Anuncio</string>
+    <string name="menu_obtener_oferta">Matricúlate en UTH y obten una oferta</string>
+
+    <string name="nav_hi">Estás listo para dar lo mejor de ti?</string>
+    <string name="user">darius.com</string>
+    <string name="level">Nivel</string>
+    <string name="navigation_drawer_open">Abrir</string>
+    <string name="navigation_drawer_close">Cerrar</string>
+    <string name="bar_title_record">Registros obtenidos</string>
+
+    <string name="orderby_dateZA">Fecha (Recientes primero)</string>
+    <string name="orderby_durationZA">Duracion (Mayores primero)</string>
+    <string name="orderby_distanceZA">Distancia (Mayores primero)</string>
+    <string name="orderby_avgspeedZA">Vel. Prom. (Mayores primero)</string>
+    <string name="orderby_maxspeedZA">Vel. Max. (Mayores primero)</string>
+
+    <string name="orderby_dateAZ">Fecha (Antiguos primero)</string>
+    <string name="orderby_durationAZ">Duracion (Menores primero)</string>
+    <string name="orderby_distanceAZ">Distancia (Menores primero)</string>
+    <string name="orderby_avgspeedAZ">Vel. Prom. (Menores primero)</string>
+    <string name="orderby_maxspeedAZ">Vel. Max. (Menores primero)</string>
+
+    <string name="start">INICIAR</string>
+    <string name="stop">ALTO</string>
+    <string name="finish">Finalizar</string>
+    <string name="rounds">Round 1</string>
+    <string name="time_running">Running Time</string>
+    <string name="time_walking">Walking Time</string>
+    <string name="walking_clock">00:00</string>
+    <string name="init_stop_watch_value">00:00:00</string>
+
+    <string name="hard_volumen">Volumen de Música</string>
+    <string name="soft_volumen">Volumen de Música</string>
+    <string name="notification_volumen">Volumen de Notificaciones</string>
+    <string name="hard_position">00:00:00</string>
+    <string name="hard_duration">01:00:00</string>
+    <string name="soft_position">00:00:00</string>
+    <string name="soft_duration">01:00:00</string>
+
+    <string name="PopUpTotalRuns">Carrera: </string>
+    <string name="PopUpTotalDistance">Kms acumulados: </string>
+    <string name="PopUpTotalTime">Tiempo Total: </string>
+    <string name="NoDataWarning">No hay datos registrados. Recuerda activar el GPS si deseas información de tu carrera</string>
+
+    <string name="PopUpDurationTitle">DURACION</string>
+    <string name="PopUpChallengeTitle">OBJETIVO</string>
+    <string name="PopUpIntervalTitle">INTERVALOS</string>
+    <string name="PopUpDistanceTitle">DISTANCIA</string>
+    <string name="PopUpAvgSpeedTitle">VELOCIDAD PROMEDIO</string>
+    <string name="PopUpMaxSpeedTitle">VELOCIDAD MÁXIMA</string>
+    <string name="PopUpUnevennessTitle">DESNIVEL</string>
+
+    <string name="textNull"></string>
+    <string name="textNoData">-</string>
+
+    <string name="medalDistanceDescription">Distancia [Record Personal]</string>
+    <string name="medalAvgSpeedDescription">Vel. Máx. [Record Personal]</string>
+    <string name="medalMaxSpeedDescription">Vel. Prom. [Record Personal]</string>
+
+    <string name="alertActivationGPSTitle">Permitir acceso a ubicación</string>
+    <string name="alertActivationGPSDescription">Si desea obtener datos de su carrera como la distancia recorrida y la velocidad debe activar el GPS</string>
+    <string name="ignoreActivationGPS">Ignorar</string>
+    <string name="aceptActivationGPS">Activar</string>
+
+    <string name="alertClearPreferencesTitle">¿Quieres borrar tus preferencias de carrera?</string>
+    <string name="alertClearPreferencesDescription">Borraremos los ajustes de carrera (modo y tiempo de intervalos) de tu útlima carrera</string>
+
+    <string name="alertSignOutTitle">¿Quieres cerrar sesion?</string>
+    <string name="alertSignOutTDescription">Te esperamos pronto!!!</string>
+
+    <string name="terminos_condiciones"><![CDATA[
+1. OBJETO:\n
+El objeto del presente simulador es el de permitir al usuario que luego de utilizar la simulación de un crédito confirme de manera voluntaria que desea ser contactado con base en los datos o información que ha suministrado. El usuario demuestra con la aceptación de estos términos y condiciones la solicitud formal y voluntaria para del contacto comercial y asesoría para adquirir un crédito.\n
+El usuario debe prever que la información y materiales que figuran en el simulador y los términos, condiciones y descripciones que en ella aparecen, están sujetos a cambio, de acuerdo con las políticas internas que se encuentren vigentes al interior de LAGOBO DISTRIBUCIONES S.A.S. de sus filiales o a quien represente sus derechos. El manejo de datos de información personal y crediticia de los usuarios ingresen al simulador serán tratados de acuerdo con lo contenido en la legislación colombiana (Ley de Habeas Data) y en concordancia con las políticas internas certificadas para el manejo de datos de información. El simulador le permitirá conocer al usuario un valor aproximado del monto y cuotas de su crédito dependiendo del plazo y la tasa de interés aplicable según la información suministrada por el usuario; con base en esto a través de esta página el usuario solicita voluntariamente ser contactado. El Contacto que se realiza tiene como parámetro el estudio simulado según los datos suministrados por el usuario, pero este se encuentra sujeto a modificación de acuerdo con las políticas de aprobación de crédito y la veracidad y total información suministrada por el usuario. La cual se validará finalmente durante el proceso de aprobación del crédito y se le contactará al usuario solicitante para darles las condiciones finales del crédito.\n
+LAGOBO DISTRIBUCIONES S.A.S. sus filiales o quien represente sus derechos se reserva el derecho de contacto y contactará solo a los usuarios que cumplan con los perfiles y políticas de crédito.\n
+Los usuarios al aceptar estos términos y condiciones también autorizan LAGOBO DISTRIBUCIONES S.A.S. sus filiales o quien represente sus derechos, de manera voluntaria en forma permanente e irrevocable, para que con fines estadísticos y de información financiera o comercial, consulte, informe, reporte, procese o divulgue, a las entidades de consulta de bases de datos o Centrales de Información y Riesgo.\n
+El usuario acepta que la información suministrada es cierta, y autoriza a LAGOBO DISTRIBUCIONES S.A.S. sus filiales o quien represente sus derechos, para utilizarla y divulgarla única y exclusivamente con la finalidad de prestar el servicio y para la contratación del crédito del cual pueda ser sujeto el usuario.\n
+
+2. USO DE INFORMACIÓN:\n
+Acepto y autorizo el envío de mis datos personales (tales como número de identificación, nombre y apellidos, correo electrónico, número teléfono, ingresos y descuentos, monto, plazo y cuota simulada en caso de haber hecho simulación, ciudad de residencia) de manera expresa y voluntaria a LAGOBO DISTRIBUCIONES S.A.S. sus filiales o quien represente sus derechos, para que directamente o a través de terceros, puedan en cualquier tiempo acceder, almacenar, suministrar, reportar, procesar, divulgar, consultar, utilizar, compilar, tratar y compartir, sea de forma verbal, escrita o a través de cualquier medio, mi información personal, de carácter comercial, financiero, crediticio y de servicios aquí consignada, la cual se recauda con fines comerciales, financieros, crediticios, operativos y de seguridad y con el fin de que se pueda brindar en la debida forma y con la adecuada diligencia información sobre los productos ofrecidos por LAGOBO DISTRIBUCIONES S.A.S. sus filiales o quien represente sus derechos; igualmente autorizo para que se puedan adelantar estudios de mercadeo, investigaciones comerciales y/o estadísticas, ofrecer de manera individual o conjunta con terceros, productos y servicios propios o de terceros, así como para ser notificado de noticias acerca de los cambios presentados en los productos.\n
+Declaro que es de mi conocimiento que la información aquí consagrada se tratará de acuerdo con los términos del Artículo 15 de la Ley 1266 de 2008 y sus modificaciones o adiciones que establecen lo siguiente\n
+Autorizo, el envío de información comercial, financiera y de productos y servicios de LAGOBO DISTRIBUCIONES S.A.S. sus filiales o quien represente sus derechos a mi teléfono móvil, correo electrónico, aplicaciones de mensajería para teléfono inteligente y/o cualquier otro mecanismo de contacto.\n
+
+3. RESPONSABILIDAD DEL SERVICIO:\n
+LAGOBO DISTRIBUCIONES S.A.S. sus filiales o quien represente sus derechos no asume responsabilidad en caso de que el Usuario no pueda navegar a través del SIMULADOR o acceder a los servicios ofrecidos por problemas de internet, congestión en la red o cualquier otra situación no imputable a su culpa grave o dolo. Igualmente no es responsable, salvo culpa grave o dolo, de los perjuicios que se deriven directa o indirectamente de la existencia, uso, acceso, imposibilidad de uso o imposibilidad de acceso al presente SIMULADOR, a sus vínculos o enlaces en internet o cualquier otra red informática. LAGOBO DISTRIBUCIONES S.A.S. sus filiales o quien represente sus derechos no se hará responsable, salvo culpa grave o dolo, por las fallas que puedan presentarse en la operatividad del sistema desde donde se accede al SIMULADOR o internet, en este sentido si se requiere continuar con una operación o procedimiento, el mismo podrá continuarse en las instalaciones físicas de LAGOBO DISTRIBUCIONES S.A.S. sus filiales o quien represente sus derechos.\n
+Declaro que es de mi conocimiento como Usuario que las condiciones presentadas en este SIMULADOR pueden variar dependiendo de las condiciones financieras del mercado y personales del usuario, así como de las fechas en que se realice la simulación en el SIMULADOR del cual haré uso. Así mismo, entiendo que los precios, valores y tarifas aquí presentadas no incluyen gastos y costos eventuales de la operación y el ingreso a la plataforma del SIMULADOR no corresponde a una oferta formal del producto.\n
+LAGOBO DISTRIBUCIONES S.A.S. sus filiales o quien represente sus derechos se reserva el derecho a negar el acceso al SIMULADOR y/o los servicios prestados a través de él, en cualquier momento y sin necesidad de aviso previo, a aquellos usuarios que no cumplan los términos y condiciones del uso del SIMULADOR o que con su actuación vulneren la ley colombiana, así como podrá realizar las investigaciones que considere pertinentes para determinar la exclusión de los usuarios o prohibir su acceso futuro en caso de que se presente dicho incumplimiento o vulneración. Del mismo modo, se reserva el derecho de eliminar información incluida por el usuario, en caso de que lo estime conveniente o necesario, según su discrecionalidad, en caso de que considere que dicha información pueda ir en contravía de los términos y condiciones del SIMULADOR contraríe la ley colombiana u ocasione algún perjuicio, riesgo o daño para LAGOBO DISTRIBUCIONES S.A.S. sus filiales o quien represente sus derechos.\n
+
+4. CONDICIONES MÍNIMAS DE ACCESO:\n
+El Usuario deberá contar con medios de hardware y software que le permitan recibir a través de Internet, la información asociada a cualquiera de los servicios ofrecidos y señalados en los presentes términos y condiciones. Las versiones de navegadores soportados por el SIMULADOR son: Internet Explorer IE 11; Mozilla Firefox última versión; Chrome última versión. También las versiones de navegadores en dispositivos móviles con Android y IOS. El simulador soporta un mínimo de tamaño en la resolución de las pantallas; Móvil 320px, Tablet 321px a 768px, Desktop 769px a 1280px, Huge 1281px en adelante.\n
+
+5. OBLIGACIONES DEL USUARIO:\n
+El Usuario se obliga a no acceder, ni intervenir en el funcionamiento, ni usar o disponer en cualquier forma de los archivos, sistemas, programas, aplicaciones o cualquier otro elemento del SIMULADOR, como también se obliga a no acceder, ni usar o disponer indebidamente o sin autorización del LAGOBO DISTRIBUCIONES S.A.S. sus filiales o quien represente sus derechos, los datos o información incluidos en los mismos programas, archivos, sistemas y aplicaciones, entre otros. Igualmente se obliga a brindar información real, veraz, cierta y comprobable, absteniéndose de utilizar información adulterada o que no corresponda a la verdad o que no sea de su propiedad o no esté debidamente autorizado para el efecto. Debe respetar los derechos de autor y en general de propiedad intelectual, observar y cumplir las condiciones mínimas de acceso y las reglas de seguridad del SIMULADOR conforme lo dispuesto en los presentes términos y condiciones.\n
+
+6. AL UTILIZAR EL SIMULADOR, QUEDA PROHIBIDO:\n
+Enviar o publicar o transmitir material sexual u obsceno o cualquier otra publicación de tipo sensible penalizada por ley constitucional y penal Colombiana.\n
+Enviar o publicar o transmitir información cuyo contenido sea, directa o indirectamente, agresivo, profano, abusivo, difamatorio y/o fraudulento o que vaya en contra del buen nombre de LAGOBO DISTRIBUCIONES S.A.S. sus filiales o quien represente sus derechos.\n
+Enviar o publicar o transmitir archivos que contengan virus u otras características destructivas que puedan afectar de manera adversa el funcionamiento de un dispositivo ajeno y/o puedan afectar el correcto funcionamiento de estos y/o del SIMULADOR y por esto asumirá las responsabilidades civiles y/o penales a que tengan lugar.\n
+Utilizar el simulador en nombre de terceros o ingresar información personal falsa, erróneo o inexistente, ya sea como persona natural o jurídica. El usuario será responsable por todos los usos de sus registros de datos en el SIMULADOR.\n
+El usuario se responsabiliza de entregar su información personal y no utilizar información de terceros para acceder al presente SIMULADOR, con la pena de tener que responder por los daños y perjuicios que ello ocasione al titular de la información por él suministrada sin la debida autorización. No está permitido actuar como usuario en representación de un tercero sin demostrarlo previamente.\n
+El(los) USUARIO(S) acepta(n) que se registre la dirección IP desde la que se accede al SIMULADOR, para efectos de velar por la corrección de los servicios y expulsar al(los) USUARIO(S) que incumpla(n) las presentes CONDICIONES.\n
+
+7. DURACIÓN:\n
+Los presentes términos y condiciones de uso del SIMULADOR son de duración indefinida. Sin embargo, por las condiciones del servicio brindado a través de esta, a LAGOBO DISTRIBUCIONES S.A.S. sus filiales o quien represente sus derechos podrá dejarlo sin efecto, sin preaviso alguno y sin responsabilidad alguna.\n
+
+8. MODIFICACIONES:\n
+El Usuario manifiesta que conoce el presente reglamento y que lo acepta íntegramente, igualmente acepta cualquier reforma, modificación o cancelación que se haga de los términos y condiciones aquí previstas, sin necesidad de aviso previo.\n
+
+9. TERMINACIÓN:\n
+El incumplimiento por parte del Usuario de cualquiera de las obligaciones aquí mencionadas dará lugar a la terminación del servicio, quedando a LAGOBO DISTRIBUCIONES S.A.S. sus filiales o quien represente sus derechos facultado para modificar el sistema y de esta manera interrumpir la prestación del servicio de manera unilateral.\n
+Para todos los efectos derivados de los presentes términos y condiciones, el Usuario acepta y se somete a las leyes de la República de Colombia y cualquier controversia o reclamación, alcance o cumplimiento estará sometido a la justicia Colombiana. Declaro que he leído y entendido en su totalidad los términos y condiciones aquí establecidas por lo cual acepto y autorizo de manera voluntaria todo su contenido.\n
+Para más información o dudas respecto a los términos y condiciones de este simulador comunicar a las líneas 01 8000 117787
+    ]]></string>
+
+
+
+
+
+</resources>
