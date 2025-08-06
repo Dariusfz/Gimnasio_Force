@@ -101,6 +101,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             arrayOf(
                 Manifest.permission.ACCESS_COARSE_LOCATION,//permisos de ubicacion
                 Manifest.permission.ACCESS_FINE_LOCATION) //ubicacion con precision
+
+        var countFotos: Int =0
+        var ultimaFoto: String = ""
     }
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -203,6 +206,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var listaNivelCarrera: ArrayList<Nivel>
 
     private var sportsLoaded: Int = 0
+
+    private var dateRun: String = ""
+    private var startTimeRun: String = ""
+
 
 
 
@@ -1742,6 +1749,16 @@ private fun registerNewLocation(location: Location){
     tvMaxSpeedRun.setText(roundNumber(maxSpeed.toString(), 1))
 
     }
+
+    fun tomarFoto(v: View) {
+        val intent = Intent(this, Camara::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            putExtra("dateRun", dateRun)
+            putExtra("startTimeRun", startTimeRun)
+        }
+        startActivity(intent)
+    }
+
 
 
 }

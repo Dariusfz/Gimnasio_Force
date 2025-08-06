@@ -65,8 +65,17 @@ class LoginActivity : AppCompatActivity() {
         super.onStart()
 
         val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser != null)  goHome(currentUser.email.toString(), currentUser.providerId)
-
+        if (currentUser != null && currentUser.isEmailVerified) {
+            goHome(currentUser.email.toString(), currentUser.providerId)
+        } else if (currentUser != null) {
+            // Usuario logueado pero correo no verificado
+            FirebaseAuth.getInstance().signOut()
+            Toast.makeText(
+                this,
+                "Por favor verifica tu correo electrónico antes de iniciar sesión",
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 //controlar que al presionar el boton de atras vaya a la pantalla de inicio
     @SuppressLint("SuspiciousIndentation")
@@ -100,22 +109,38 @@ class LoginActivity : AppCompatActivity() {
     fun login(view: View) {
         loginUser()
     }
-    private fun loginUser(){
+    private fun loginUser() {
         email = etEmail.text.toString()
         password = etPassword.text.toString()
 
         mAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this){ task ->
-                if (task.isSuccessful)  goHome(email, "email")
-                else{
-                    if (lyTerms.visibility == View.INVISIBLE) lyTerms.visibility = View.VISIBLE
-                    else{
-                        var cbAcept = findViewById<CheckBox>(R.id.cbAcept)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val user = mAuth.currentUser
+                    if (user?.isEmailVerified == true) {
+                        goHome(email, "email")
+                    } else {
+                        // Correo no verificado
+                        mAuth.signOut() // Cerrar sesión automáticamente
+                        Toast.makeText(
+                            this,
+                            "Por favor verifica tu correo electrónico primero",
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                        // Opcional: Reenviar correo de verificación
+                        sendEmailVerification()
+                    }
+                } else {
+                    // Manejo de errores existente
+                    if (lyTerms.visibility == View.INVISIBLE) {
+                        lyTerms.visibility = View.VISIBLE
+                    } else {
+                        val cbAcept = findViewById<CheckBox>(R.id.cbAcept)
                         if (cbAcept.isChecked) register()
                     }
                 }
             }
-
     }
 
     private fun goHome(email: String, provider: String){
@@ -127,24 +152,49 @@ class LoginActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun register(){
+    private fun register() {
         email = etEmail.text.toString()
         password = etPassword.text.toString()
 
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener {
-                if (it.isSuccessful){
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Enviar correo de verificación
+                    sendEmailVerification()
 
-                    var dateRegister = SimpleDateFormat("dd/MM/yyyy").format(Date())
-                    var dbRegister = FirebaseFirestore.getInstance()
-                    dbRegister.collection("users").document(email).set(hashMapOf(
-                        "user" to email,
-                        "dateRegister" to dateRegister
-                    ))//crear tabla de usuarios y enviar el usuario y fecha de registro
-
-                    goHome(email, "email")
+                    // Guardar datos del usuario
+                    val dateRegister = SimpleDateFormat("dd/MM/yyyy").format(Date())
+                    FirebaseFirestore.getInstance()
+                        .collection("users")
+                        .document(email)
+                        .set(hashMapOf(
+                            "user" to email,
+                            "dateRegister" to dateRegister,
+                            "emailVerified" to false // Añadir campo de verificación
+                        ))
+                } else {
+                    Toast.makeText(this, "Error en el registro: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
-                else Toast.makeText(this, "Error, algo ha ido mal :(", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun sendEmailVerification() {
+        val user = FirebaseAuth.getInstance().currentUser
+        user?.sendEmailVerification()
+            ?.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(
+                        this,
+                        "Se ha enviado un correo de verificación a $email",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Error al enviar correo de verificación: ${task.exception?.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
     }
 
@@ -190,30 +240,27 @@ fun callSignInGoogle (view:View){
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RESULT_CODE_GOOGLE_SIGN_IN) {
-
             try {
                 val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-                // Google Sign In was successful, authenticate with Firebase
                 val account = task.getResult(ApiException::class.java)!!
 
-                if (account != null){
+                if (account != null) {
                     email = account.email!!
                     val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-                    mAuth.signInWithCredential(credential).addOnCompleteListener{
-                        if (it.isSuccessful) goHome(email, "Google")
-                        else Toast.makeText(this, "Error en la conexión con Google", Toast.LENGTH_SHORT)
-
+                    mAuth.signInWithCredential(credential).addOnCompleteListener { authTask ->
+                        if (authTask.isSuccessful) {
+                            // Con Google no necesitamos verificación de email
+                            goHome(email, "Google")
+                        } else {
+                            Toast.makeText(this, "Error en la conexión con Google", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
-
-
             } catch (e: ApiException) {
-                Toast.makeText(this, "Error en la conexión con Google", Toast.LENGTH_SHORT)
+                Toast.makeText(this, "Error en la conexión con Google: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
-
     }
 
 
