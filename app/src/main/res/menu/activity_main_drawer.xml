@@ -4,25 +4,27 @@
         <item android:id="@+id/nav_item_main"
             android:icon="@drawable/icon_run"
             android:title="@string/running"  />
+
         <item android:id="@+id/nav_item_record"
             android:icon="@drawable/menu_gallery"
             android:title="@string/record" />
+
         <item android:id="@+id/nav_item_premium"
             android:icon="@android:drawable/star_on"
             android:title="@string/menu_premium" />
     </group>
 
-    <item android:title="Cuenta">
+    <item android:title="@string/menu_cuenta">
         <menu>
             <item android:id="@+id/nav_item_clearpreferences"
                 android:icon="@android:drawable/ic_popup_sync"
                 android:title="@string/menu_limpiar" />
             <item android:id="@+id/nav_item_signout"
-                android:icon="@drawable/cerrarsesion"
+                android:icon="@drawable/abc_vector_test"
                 android:title="@string/menu_salir" />
         </menu>
     </item>
-    <item android:title="Anuncio">
+    <item android:title="@string/menu_anuncio">
         <menu>
             <item android:id="@+id/nav_item_offer"
                 android:icon="@drawable/common_full_open_on_phone"

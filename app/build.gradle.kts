@@ -48,34 +48,21 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation ("androidx.core:core-ktx:1.16.0")
-
-    // Import the Firebase BoM (Bill of Materials)
-    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))  // Usa la última versión estable
-
-// Declare the dependencies for Firebase without version numbers
-    implementation ("com.google.firebase:firebase-auth")
-    implementation ("com.google.firebase:firebase-database")
-    implementation ("com.google.firebase:firebase-firestore")
-    implementation("com.google.firebase:firebase-analytics")  // Si la necesitas
 
     // Import the Firebase BoM
- /*   implementation(platform("com.google.firebase:firebase-bom:29.2.0"))
-    implementation ("com.google.firebase:firebase-auth:21.0.2")
+    implementation(platform(libs.firebase.bom))
+    implementation (libs.firebase.auth)
 //implementation 'com.google.firebase:firebase-analytics'
-    implementation ("com.google.firebase:firebase-database:20.0.4")
-
-
+    implementation (libs.firebase.database)
+    implementation (libs.firebase.firestore)
     implementation(libs.firebase.analytics)
     // Import the BoM for the Firebase platform
-   // implementation(libs.firebase.bom)
+    implementation(libs.firebase.bom)
 
 
     implementation(libs.google.firebase.auth)
-    implementation ("com.google.firebase:firebase-auth-ktx:22.3.1")*/
-    implementation ("com.google.android.gms:play-services-auth:20.1.0")
-    implementation ("com.google.firebase:firebase-firestore:24.0.2")
-    implementation ("com.google.firebase:firebase-appcheck")
+    implementation ("com.google.firebase:firebase-auth-ktx:22.3.1")
+    implementation ("com.google.android.gms:play-services-auth:20.7.0")
 
 
     implementation(libs.androidx.credentials.play.services.auth)
@@ -87,7 +74,7 @@ dependencies {
     implementation ("androidx.coordinatorlayout:coordinatorlayout:1.3.0")
 
     //geolocalizacion
-    implementation ("com.google.android.gms:play-services-location:21.3.0")
+    implementation ("com.google.android.gms:play-services-location:19.0.1")
     implementation ("com.google.android.gms:play-services-maps:19.2.0")
 
 

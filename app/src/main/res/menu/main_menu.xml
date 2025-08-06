@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_run"
+        android:icon="@drawable/icon_run"
+        android:title="Correr"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_history"
+        android:title="Historial"
+        android:icon="@drawable/menu_gallery"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_premium"
+        android:title="Hazte Premium"
+        android:icon="@android:drawable/star_on"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_account"
+        android:title="Cuenta"
+
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/action_clear_prefs"
+                android:icon="@android:drawable/ic_popup_sync"
+                android:title="Borrar preferencias"/>
+            <item
+                android:id="@+id/action_logout"
+                android:icon="@drawable/cerrarsesion"
+                android:title="Cerrar sesión"/>
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/action_ad"
+        android:title="Anuncio"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/action_ad_settings"
+                android:icon="@drawable/common_full_open_on_phone"
+                android:title="@string/menu_obtener_oferta"/>
+
+        </menu>
+    </item>
+</menu>

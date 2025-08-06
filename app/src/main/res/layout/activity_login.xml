@@ -61,8 +61,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:inputType="textPassword"
-            android:typeface="monospace"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
