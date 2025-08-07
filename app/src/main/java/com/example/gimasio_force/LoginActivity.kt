@@ -8,6 +8,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.credentials.Credential
@@ -25,6 +26,8 @@ import kotlin.properties.Delegates
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.GoogleAuthProvider
 
 class LoginActivity : AppCompatActivity() {
@@ -42,6 +45,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var etEmail: EditText
     private lateinit var etPassword: EditText
     private lateinit var lyTerms: LinearLayout
+    private lateinit var btnFacebook: Button
 
     private lateinit var mAuth: FirebaseAuth
 
@@ -56,9 +60,19 @@ class LoginActivity : AppCompatActivity() {
         etPassword = findViewById(R.id.etPassword)
         mAuth = FirebaseAuth.getInstance()
 
+        btnFacebook = findViewById(R.id.btnSingFacebook)
+
        manageButtonLogin()
         etEmail.doOnTextChanged { text, start, before, count ->  manageButtonLogin() }
         etPassword.doOnTextChanged { text, start, before, count ->  manageButtonLogin() }
+
+        btnFacebook.setOnClickListener {
+            mensajeFacebook()
+        }
+    }
+
+    private fun mensajeFacebook(){
+        Toast.makeText(this,"Lo Sentimos, modulo no disponible, intente con otro método :)", Toast.LENGTH_SHORT).show()
     }
     //verifica si hay un usuario logeado para iniciar sesion directamente
     public override fun onStart() {
@@ -132,13 +146,94 @@ class LoginActivity : AppCompatActivity() {
                         sendEmailVerification()
                     }
                 } else {
-                    // Manejo de errores existente
-                    if (lyTerms.visibility == View.INVISIBLE) {
-                        lyTerms.visibility = View.VISIBLE
-                    } else {
-                        val cbAcept = findViewById<CheckBox>(R.id.cbAcept)
-                        if (cbAcept.isChecked) register()
-                    }
+                    // Manejo de errores mejorado
+                    handleLoginError(task.exception)
+                }
+            }
+    }
+
+    private fun handleLoginError(exception: Exception?) {
+        when (exception) {
+            is FirebaseAuthInvalidUserException -> {
+                // Usuario no existe - verificar si quiere registrarse
+                showRegistrationOption()
+            }
+            is FirebaseAuthInvalidCredentialsException -> {
+                // Contraseña incorrecta para usuario existente
+                Toast.makeText(
+                    this,
+                    "Datos incorrectos",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            else -> {
+                // Otro tipo de error
+                Toast.makeText(
+                    this,
+                    "Error al iniciar sesión: ${exception?.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    private fun showRegistrationOption() {
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Usuario no registrado")
+            .setMessage("¿Deseas registrarte con este correo?")
+            .setPositiveButton("Sí") { _, _ ->
+                if (ValidateEmail.isEmail(email)) {
+                    register()
+                } else {
+                    Toast.makeText(this, "Ingresa un correo válido", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("No", null)
+            .create()
+
+        dialog.show()
+    }
+
+
+    private fun register() {
+        if (!ValidateEmail.isEmail(email)) {
+            Toast.makeText(this, "Ingresa un correo válido", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (password.length < 6) {
+            Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Enviar correo de verificación
+                    sendEmailVerification()
+
+                    // Guardar datos del usuario
+                    val dateRegister = SimpleDateFormat("dd/MM/yyyy").format(Date())
+                    FirebaseFirestore.getInstance()
+                        .collection("users")
+                        .document(email)
+                        .set(hashMapOf(
+                            "user" to email,
+                            "dateRegister" to dateRegister,
+                            "emailVerified" to false
+                        ))
+
+                    Toast.makeText(
+                        this,
+                        "Registro exitoso. Se ha enviado un correo de verificación a $email",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Error en el registro: ${task.exception?.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
     }
@@ -152,7 +247,7 @@ class LoginActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun register() {
+  /*  private fun register() {
         email = etEmail.text.toString()
         password = etPassword.text.toString()
 
@@ -176,7 +271,7 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this, "Error en el registro: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
-    }
+    }*/
 
     private fun sendEmailVerification() {
         val user = FirebaseAuth.getInstance().currentUser

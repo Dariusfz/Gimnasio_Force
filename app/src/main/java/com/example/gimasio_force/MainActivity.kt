@@ -17,6 +17,7 @@ import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.CheckBox
@@ -221,12 +222,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         tvRounds.text = getString(R.string.rounds)
 
         mainContext=this
+        // 1. Inicializar componentes básicos
         initObjects()
         initToolBar()
         initNavigationView()
         initPermissionsGPS()
 
+        // 2. Cargar preferencias
+        initPreferences()
+        recuperarPreferencias() // Aquí se establece deporteSeleccionado
+
+        // 3. Cargar datos de Firebase (incluye records)
         cargarDesdeBD()
+
+       /* val toolbar: androidx.appcompat.widget.Toolbar= findViewById(R.id.toolbar_main)
+        setSupportActionBar(toolbar)*/
 
 
     }
@@ -543,7 +553,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 sportsLoaded++
                 establecerNivelDeporte(deporte)
-                //if (sportsLoaded == 3) selectSport(sportSelected)
+                if (sportsLoaded == 2) seleccionarDeporte(deporteSeleccionado)
 
             }//en caso de algun fallo se genera un log
             .addOnFailureListener { exception ->
@@ -551,6 +561,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
     }
+
+
 //capturar los niveles de la aplicacion
     private fun establecerNivelDeporte(deporte: String){
         val dbNiveles: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -574,6 +586,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 Log.w(ContentValues.TAG, "Error getting documents: ", exception)
             }
     }
+
+
 
     //establecer el nivel de bicicleta
     private fun setNivelBicicleta(){
@@ -709,7 +723,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     //recuperamos las preferencias que el usuario ha programado
     private fun recuperarPreferencias(){
         if (sharedPreferences.getString(llave_UsuarioApp, "null") == useremail){
-            deporteSeleccionado = sharedPreferences.getString(llave_deporteSeleccionado, "Running").toString()
+            deporteSeleccionado = sharedPreferences.getString(llave_deporteSeleccionado, "Carrera").toString()
 
             swIntervalMode.isChecked = sharedPreferences.getBoolean(llave_modointervalo, false)
             if (swIntervalMode.isChecked){
@@ -735,22 +749,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     showChallenge("duration")
                 }
                 if (sharedPreferences.getBoolean(llave_mododesafiodistancia, false)){
-                    npChallengeDistance.value = sharedPreferences.getInt(llave_desafiodistancia, 10)
+                    npChallengeDistance.value = sharedPreferences.getInt(llave_mododesafio, 10)
                     challengeDistance = npChallengeDistance.value.toFloat()
                     challengeDuration = 0
 
                     showChallenge("distance")
                 }
             }
-            cbNotify.isChecked = sharedPreferences.getBoolean(llave_notificacionesdesafio, true)
-            cbAutoFinish.isChecked = sharedPreferences.getBoolean(llave_autofinalizar, false)
+           /* cbNotify.isChecked = sharedPreferences.getBoolean(key_challengeNofify, true)
+            cbAutoFinish.isChecked = sharedPreferences.getBoolean(key_challengeAutofinish, false)
 
+            sbHardVolume.progress = sharedPreferences.getInt(key_hardVol, 100)
+            sbSoftVolume.progress = sharedPreferences.getInt(key_softVol, 100)
+            sbNotifyVolume.progress = sharedPreferences.getInt(key_notifyVol, 100)*/
 
-           // sbNotifyVolume.progress = sharedPreferences.getInt(llave_notificacion, 100)
-
-        }
+        }else deporteSeleccionado = "Carrera"
 
     }
+
 
 
     //guardamos los datos que el usuario a programado como ser distancias, tiempos, etc
@@ -836,16 +852,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
     override fun onBackPressed() {
-
-        //super.onBackPressed()
-        if (drawer.isDrawerOpen(GravityCompat.START)){
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START)
-            return
-        }else{
-            singOut()
-            return
+        } else if (lyPopupRun.isVisible) {
+            cerrarVentanaCorredor()
+        } else {
+            super.onBackPressed()
         }
-        super.onBackPressed()
     }
 //obtener los valores proporcionados por el gps
     private fun initPermissionsGPS(){
@@ -883,7 +896,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         tvUser.text= useremail
     }
 
-    private fun initToolBar() {
+   /* private fun initToolBar() {
         val toolbar: androidx.appcompat.widget.Toolbar= findViewById(R.id.toolbar_main)
         setSupportActionBar(toolbar)
 
@@ -891,6 +904,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val toogle = ActionBarDrawerToggle(this,drawer,toolbar,R.string.bar_title,R.string.navigation_drawer_close)
         drawer.addDrawerListener(toogle)
         toogle.syncState()
+    }*/
+
+    private fun initToolBar() {
+        val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar_main)
+        setSupportActionBar(toolbar)
+
+        drawer = findViewById(R.id.drawer_layout)
+        val toggle = ActionBarDrawerToggle(
+            this,
+            drawer,
+            toolbar,
+            R.string.bar_title,
+            R.string.navigation_drawer_close
+        ).apply {
+
+            syncState()
+        }
+
+        drawer.addDrawerListener(toggle)
     }
 
     private fun singOut() {
@@ -952,9 +984,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         challengeDuration = getSecFromWatch("${hours}:${minutes}:${seconds}")
     }
 
-    fun callSignOut(view: android.view.View) {
-        singOut()
-    }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
@@ -1355,9 +1384,57 @@ private fun registerNewLocation(location: Location){
         Log.d("Popup", "resetClicked() llamado")
         guardarPreferencias()
         mostrarVentanaEmergente()
+        actualizarTotalesUsuario()
         Log.d("Popup", "resetClicked() finalizado")
         resetTimeView()
         resetInterface()
+    }
+
+
+
+    private fun actualizarTotalesUsuario(){
+        totalesDeporteSeleccionado.totalCarreras = totalesDeporteSeleccionado.totalCarreras!! + 1
+        totalesDeporteSeleccionado.totalDistancia = totalesDeporteSeleccionado.totalDistancia!! + distance
+        totalesDeporteSeleccionado.totalTiempo = totalesDeporteSeleccionado.totalTiempo!! + timeInSeconds.toInt()
+
+        if (distance > totalesDeporteSeleccionado.recordDistancia!!){
+            totalesDeporteSeleccionado.recordDistancia = distance
+        }
+        if (maxSpeed > totalesDeporteSeleccionado.recordVelocidad!!){
+            totalesDeporteSeleccionado.recordVelocidad = maxSpeed
+        }
+        if (avgSpeed > totalesDeporteSeleccionado.recordVelocidadPromedio!!){
+            totalesDeporteSeleccionado.recordVelocidadPromedio = avgSpeed
+        }
+
+        totalesDeporteSeleccionado.totalDistancia = roundNumber(totalesDeporteSeleccionado.totalDistancia.toString(),1).toDouble()
+        totalesDeporteSeleccionado.recordDistancia = roundNumber(totalesDeporteSeleccionado.recordDistancia.toString(),1).toDouble()
+        totalesDeporteSeleccionado.recordVelocidad = roundNumber(totalesDeporteSeleccionado.recordVelocidad.toString(),1).toDouble()
+        totalesDeporteSeleccionado.recordVelocidadPromedio = roundNumber(totalesDeporteSeleccionado.recordVelocidadPromedio.toString(),1).toDouble()
+
+        var collection = "totales$deporteSeleccionado"
+        var dbUpdateTotals = FirebaseFirestore.getInstance()
+        dbUpdateTotals.collection(collection).document(useremail)
+            .update("recordVelocidadPromedio", totalesDeporteSeleccionado.recordVelocidadPromedio)
+        dbUpdateTotals.collection(collection).document(useremail)
+            .update("recordDistancia", totalesDeporteSeleccionado.recordDistancia)
+        dbUpdateTotals.collection(collection).document(useremail)
+            .update("recordVelocidad", totalesDeporteSeleccionado.recordVelocidad)
+        dbUpdateTotals.collection(collection).document(useremail)
+            .update("totalDistancia", totalesDeporteSeleccionado.totalDistancia)
+        dbUpdateTotals.collection(collection).document(useremail)
+            .update("totalCarreras", totalesDeporteSeleccionado.totalCarreras)
+        dbUpdateTotals.collection(collection).document(useremail)
+            .update("totalTiempo", totalesDeporteSeleccionado.totalTiempo)
+
+        when (deporteSeleccionado){
+            "Bicicleta" -> {
+                totalesBicileta = totalesDeporteSeleccionado
+            }
+            "Carrera" -> {
+                carrerasTotales = totalesDeporteSeleccionado
+            }
+        }
     }
 
     //reiniciar las variales del cronometro para que el usuario vuelva a iniciar la carrera
@@ -1515,7 +1592,7 @@ private fun registerNewLocation(location: Location){
         if (timeInSeconds.toInt() == 0) seleccionarDeporte("Carrera")
     }
 
-    private fun seleccionarDeporte(deporte: String){
+   private fun seleccionarDeporte(deporte: String){
 
         deporteSeleccionado = deporte
 
@@ -1567,6 +1644,7 @@ private fun registerNewLocation(location: Location){
         refrescarCBSDeporte()
         refrescarRecords()
     }
+
 //refrescar los records que va obteniendo el usuario
     private fun refrescarRecords(){
         if (totalesDeporteSeleccionado.recordDistancia!! > 0)
@@ -1582,6 +1660,7 @@ private fun registerNewLocation(location: Location){
         else
             tvMaxSpeedRecord.text = ""
     }
+
 //refrescar los circulos para saber los valores que el usuario ha generado
     private fun refrescarCBSDeporte() {
         csbRecordDistance.max = totalesDeporteSeleccionado.recordDistancia?.toFloat()!!
@@ -1598,7 +1677,10 @@ private fun registerNewLocation(location: Location){
         csbCurrentSpeed.max = csbRecordSpeed.max
         csbCurrentMaxSpeed.max = csbRecordSpeed.max
         csbCurrentMaxSpeed.progress = 0f
+
+
     }
+
 
     //funcion para desplegar el mapa cuando se le de click a la pestania
      fun llamarVistaMapa(v: View){
@@ -1757,6 +1839,42 @@ private fun registerNewLocation(location: Location){
             putExtra("startTimeRun", startTimeRun)
         }
         startActivity(intent)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_run -> {
+                Toast.makeText(this, "Correr seleccionado", Toast.LENGTH_SHORT).show()
+                return true
+            }
+            R.id.action_history -> {
+                Toast.makeText(this, "Historial seleccionado", Toast.LENGTH_SHORT).show()
+                return true
+            }
+            R.id.action_premium -> {
+                Toast.makeText(this, "Hazte Premium seleccionado", Toast.LENGTH_SHORT).show()
+                return true
+            }
+            R.id.action_clear_prefs -> {
+                Toast.makeText(this, "Borrar preferencias", Toast.LENGTH_SHORT).show()
+                return true
+            }
+            R.id.action_logout -> {
+                singOut()
+                return true
+            }
+            R.id.action_ad_settings -> {
+                Toast.makeText(this, "Configuración de anuncios", Toast.LENGTH_SHORT).show()
+                return true
+            }
+
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 
