@@ -1381,11 +1381,10 @@ private fun registerNewLocation(location: Location){
     }
     //reiniciamos el cronometro finalizamos la carrera y reiniciamos la interfaz
     private fun resetClicked(){
-        Log.d("Popup", "resetClicked() llamado")
         guardarPreferencias()
         mostrarVentanaEmergente()
         actualizarTotalesUsuario()
-        Log.d("Popup", "resetClicked() finalizado")
+        establecerNivelDeporte(deporteSeleccionado)
         resetTimeView()
         resetInterface()
     }
@@ -1745,6 +1744,72 @@ private fun registerNewLocation(location: Location){
     }
     private fun showHeaderPopUp(){
 
+        var csbRunsLevel = findViewById<CircularSeekBar>(R.id.csbRunsLevel)
+        var csbDistanceLevel = findViewById<CircularSeekBar>(R.id.csbDistanceLevel)
+        var tvTotalRunsLevel = findViewById<TextView>(R.id.tvTotalRunsLevel)
+        var tvTotalDistanceLevel = findViewById<TextView>(R.id.tvTotalDistanceLevel)
+
+
+        var ivSportSelected = findViewById<ImageView>(R.id.ivSportSelected)
+        var ivCurrentLevel = findViewById<ImageView>(R.id.ivCurrentLevel)
+        var tvTotalDistance = findViewById<TextView>(R.id.tvTotalDistance)
+        var tvTotalTime = findViewById<TextView>(R.id.tvTotalTime)
+
+        when (deporteSeleccionado){
+            "Bicicleta" ->{
+                nivelDeporteSeleccionado = nivelBicicleta
+                setNivelBicicleta()
+                ivSportSelected.setImageResource(R.mipmap.bike)
+            }
+
+            "Carrera" -> {
+                nivelDeporteSeleccionado = nivelCorriendo
+                setNivelCarrera()
+                ivSportSelected.setImageResource(R.mipmap.running)
+            }
+        }
+
+        var tvNumberLevel = findViewById<TextView>(R.id.tvNumberLevel)
+        var levelText = "${getString(R.string.level)} ${nivelDeporteSeleccionado.imagen!!.subSequence(6,7).toString()}"
+        tvNumberLevel.text = levelText
+
+        csbRunsLevel.max = nivelDeporteSeleccionado.objetivoCarreras!!.toFloat()
+        csbRunsLevel.progress = totalesDeporteSeleccionado.totalCarreras!!.toFloat()
+        if (totalesDeporteSeleccionado.totalCarreras!! > nivelDeporteSeleccionado.objetivoCarreras!!.toInt()){
+            csbRunsLevel.max = nivelDeporteSeleccionado.objetivoCarreras!!.toFloat()
+            csbRunsLevel.progress = csbRunsLevel.max
+        }
+
+        csbDistanceLevel.max = nivelDeporteSeleccionado.objetivoDeDistancia!!.toFloat()
+        csbDistanceLevel.progress = totalesDeporteSeleccionado.totalDistancia!!.toFloat()
+        if (totalesDeporteSeleccionado.totalDistancia!! > nivelDeporteSeleccionado.objetivoDeDistancia!!.toInt()){
+            csbDistanceLevel.max = nivelDeporteSeleccionado.objetivoDeDistancia!!.toFloat()
+            csbDistanceLevel.progress = csbDistanceLevel.max
+        }
+
+        tvTotalRunsLevel.text = "${totalesDeporteSeleccionado.totalCarreras!!}/${nivelDeporteSeleccionado.objetivoCarreras!!}"
+
+        var td = totalesDeporteSeleccionado.totalDistancia!!
+        var td_k: String = td.toString()
+        if (td > 1000) td_k = (td/1000).toInt().toString() + "K"
+        var ld = nivelDeporteSeleccionado.objetivoDeDistancia!!.toDouble()
+        var ld_k: String = ld.toInt().toString()
+        if (ld > 1000) ld_k = (ld/1000).toInt().toString() + "K"
+        tvTotalDistance.text = "${td_k}/${ld_k} kms"
+
+        var porcent = (totalesDeporteSeleccionado.totalDistancia!!.toDouble() *100 / nivelDeporteSeleccionado.objetivoDeDistancia!!.toDouble()).toInt()
+        tvTotalDistanceLevel.text = "$porcent%"
+
+        when (nivelDeporteSeleccionado.imagen){
+            "level_1" -> ivCurrentLevel.setImageResource(R.drawable.tortuga)
+            "level_2" -> ivCurrentLevel.setImageResource(R.drawable.liebre)
+            "level_3" -> ivCurrentLevel.setImageResource(R.drawable.lobo)
+            "level_4" -> ivCurrentLevel.setImageResource(R.drawable.leopardo)
+
+        }
+
+        var formatedTime = getFormattedTotalTime(totalesDeporteSeleccionado.totalTiempo!!.toLong())
+        tvTotalTime.text = getString(R.string.PopUpTotalTime) + formatedTime
     }
     private fun showMedals(){
         var lyMedalsRun = findViewById<LinearLayout>(R.id.lyMedalsRun)
