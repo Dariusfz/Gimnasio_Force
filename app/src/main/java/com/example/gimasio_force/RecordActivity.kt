@@ -1,17 +1,35 @@
 package com.example.gimasio_force
 
+import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.gimasio_force.LoginActivity.Companion.useremail
+import com.example.gimasio_force.MainActivity.Companion.mainContext
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
 class RecordActivity : AppCompatActivity() {
+
+    private var sportSelected : String = "Carrera"
+
+    private lateinit var ivBike : ImageView
+    private lateinit var ivRunning: ImageView
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var runsArrayList : ArrayList<Carreras>
+    private lateinit var myAdapter: RunsAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -26,6 +44,17 @@ class RecordActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
 
+        ivBike = findViewById(R.id.ivBike)
+        ivRunning = findViewById(R.id.ivRunning)
+
+        recyclerView = findViewById(R.id.rvRecords)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.setHasFixedSize(true)
+
+        runsArrayList = arrayListOf()
+        myAdapter = RunsAdapter(runsArrayList)
+        recyclerView.adapter = myAdapter
+
     }
 
 
@@ -34,6 +63,16 @@ class RecordActivity : AppCompatActivity() {
         onBackPressed()
         return true
     }
+
+    override fun onResume() {
+        super.onResume()
+        loadRecyclerView("fecha", Query.Direction.DESCENDING)
+    }
+    override fun onPause() {
+        super.onPause()
+        runsArrayList.clear()
+    }
+
 
 
      //inflamos el recurso de order by al menu
@@ -45,60 +84,122 @@ class RecordActivity : AppCompatActivity() {
     //capturar la seleccion del usuario en el menu de records
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
-        when(item.itemId){
-            R.id.orderby_date ->{
-                if(item.title==getString(R.string.orderby_dateZA)){
-                    item.title= getString(R.string.orderby_dateAZ)
-                }else{
-                    item.title= getString(R.string.orderby_dateZA)
+
+        var order: Query.Direction = Query.Direction.DESCENDING
+
+        when (item.itemId){
+            R.id.orderby_date -> {
+                if (item.title == getString(R.string.orderby_dateZA)){
+                    item.title = getString(R.string.orderby_dateAZ)
+                    order = Query.Direction.DESCENDING
                 }
+                else{
+                    item.title = getString(R.string.orderby_dateZA)
+                    order = Query.Direction.ASCENDING
+                }
+                loadRecyclerView("fecha", order)
                 return true
             }
             R.id.orderby_duration ->{
-                var opcion = getString(R.string.orderby_durationZA)
-                if(item.title==getString(R.string.orderby_durationZA)){
-                    item.title= getString(R.string.orderby_durationAZ)
-                }else{
-                    item.title= getString(R.string.orderby_durationZA)
+                var option = getString(R.string.orderby_durationZA)
+                if (item.title == getString(R.string.orderby_durationZA)){
+                    item.title = getString(R.string.orderby_durationAZ)
+                    order = Query.Direction.DESCENDING
                 }
+                else{
+                    item.title = getString(R.string.orderby_durationZA)
+                    order = Query.Direction.ASCENDING
+                }
+                loadRecyclerView("duracion", order)
                 return true
             }
+
             R.id.orderby_distance ->{
-                var opcion = getString(R.string.orderby_distanceZA)
-                if(item.title==opcion){
-                    item.title= getString(R.string.orderby_distanceAZ)
-                }else{
-                    item.title= getString(R.string.orderby_distanceZA)
+                var option = getString(R.string.orderby_distanceZA)
+                if (item.title == option){
+                    item.title = getString(R.string.orderby_distanceAZ)
+                    order = Query.Direction.ASCENDING
                 }
+                else{
+                    item.title = getString(R.string.orderby_distanceZA)
+                    order = Query.Direction.DESCENDING
+                }
+                loadRecyclerView("distancia", order)
                 return true
             }
+
             R.id.orderby_avgspeed ->{
-                var opcion = getString(R.string.orderby_avgspeedZA)
-                if(item.title==getString(R.string.orderby_avgspeedZA)){
-                    item.title= getString(R.string.orderby_avgspeedAZ)
-                }else{
-                    item.title= getString(R.string.orderby_avgspeedZA)
+                var option = getString(R.string.orderby_avgspeedZA)
+                if (item.title == getString(R.string.orderby_avgspeedZA)){
+                    item.title = getString(R.string.orderby_avgspeedAZ)
+                    order = Query.Direction.ASCENDING
                 }
+                else{
+                    item.title = getString(R.string.orderby_avgspeedZA)
+                    order = Query.Direction.DESCENDING
+                }
+                loadRecyclerView("avgSpeed", order)
                 return true
             }
 
             R.id.orderby_maxspeed ->{
-                var opcion = getString(R.string.orderby_maxspeedZA)
-                if(item.title==getString(R.string.orderby_maxspeedZA)){
-                    item.title= getString(R.string.orderby_maxspeedAZ)
-                }else{
-                    item.title= getString(R.string.orderby_maxspeedZA)
+                var option = getString(R.string.orderby_maxspeedZA)
+                if (item.title == getString(R.string.orderby_maxspeedZA)){
+                    item.title = getString(R.string.orderby_maxspeedAZ)
+                    order = Query.Direction.ASCENDING
                 }
+                else{
+                    item.title = getString(R.string.orderby_maxspeedZA)
+                    order = Query.Direction.DESCENDING
+                }
+                loadRecyclerView("maxSpeed", order)
                 return true
             }
-        }
 
+        }
         return super.onOptionsItemSelected(item)
     }
 
     fun callHome(v: View){
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
+    }
+
+    fun loadRunsBike(v: View){
+        sportSelected = "Bicicleta"
+        ivBike.setBackgroundColor(ContextCompat.getColor(mainContext, R.color.verde_oscuro))
+
+        ivRunning.setBackgroundColor(ContextCompat.getColor(mainContext, R.color.gray_medium))
+
+        loadRecyclerView("fecha", Query.Direction.DESCENDING)
+    }
+
+    fun loadRunsRunning(v: View){
+        sportSelected = "Carrera"
+        ivBike.setBackgroundColor(ContextCompat.getColor(mainContext, R.color.gray_medium))
+
+        ivRunning.setBackgroundColor(ContextCompat.getColor(mainContext, R.color.verde_oscuro))
+
+        loadRecyclerView("fecha", Query.Direction.DESCENDING)
+    }
+
+    private fun loadRecyclerView(field: String, order: Query.Direction){
+        runsArrayList.clear()
+
+        var dbRuns = FirebaseFirestore.getInstance()
+        dbRuns.collection("carreras$sportSelected").orderBy(field, order)
+            .whereEqualTo("usuario", useremail)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (run in documents)
+                    runsArrayList.add(run.toObject(Carreras::class.java))
+
+                myAdapter.notifyDataSetChanged()
+            }
+            .addOnFailureListener { exception ->
+                Log.w(ContentValues.TAG, "Error getting documents WHERE EQUAL TO: ", exception)
+            }
+
     }
 
 

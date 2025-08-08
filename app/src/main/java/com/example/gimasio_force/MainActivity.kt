@@ -33,6 +33,8 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
@@ -62,6 +64,7 @@ import com.example.gimasio_force.LoginActivity.Companion.providerSession
 import com.example.gimasio_force.LoginActivity.Companion.useremail
 import com.example.gimasio_force.Utility.animateViewofFloat
 import com.example.gimasio_force.Utility.animateViewofInt
+import com.example.gimasio_force.Utility.deleteRunAndLinkedData
 import com.example.gimasio_force.Utility.getFormattedStopWatch
 import com.example.gimasio_force.Utility.getFormattedTotalTime
 import com.example.gimasio_force.Utility.getSecFromWatch
@@ -83,8 +86,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import me.tankery.lib.circularseekbar.CircularSeekBar
-
+import java.text.SimpleDateFormat
+import java.util.Date
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
@@ -92,6 +97,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     companion object{
         lateinit var mainContext: Context
+         var activatedGPS: Boolean = true
 
         lateinit var totalesDeporteSeleccionado: Totales
         lateinit var totalesBicileta: Totales
@@ -169,7 +175,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private lateinit var lyPopupRun: LinearLayout
 
-    private var activatedGPS: Boolean = true
+
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val PERMISSION_ID = 42
     private val LOCATION_PERMISSION_REQ_CODE = 1000
@@ -210,6 +216,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private var dateRun: String = ""
     private var startTimeRun: String = ""
+
+    private lateinit var medalsListBikeDistance: ArrayList<Double>
+    private lateinit var medalsListBikeAvgSpeed: ArrayList<Double>
+    private lateinit var medalsListBikeMaxSpeed: ArrayList<Double>
+
+    private lateinit var medalsListRunningDistance: ArrayList<Double>
+    private lateinit var medalsListRunningAvgSpeed: ArrayList<Double>
+    private lateinit var medalsListRunningMaxSpeed: ArrayList<Double>
+
+    private lateinit var medalsListSportSelectedDistance: ArrayList<Double>
+    private lateinit var medalsListSportSelectedAvgSpeed: ArrayList<Double>
+    private lateinit var medalsListSportSelectedMaxSpeed: ArrayList<Double>
+
+    private var recDistanceGold: Boolean = false
+    private var recDistanceSilver: Boolean = false
+    private var recDistanceBronze: Boolean = false
+    private var recAvgSpeedGold: Boolean = false
+    private var recAvgSpeedSilver: Boolean = false
+    private var recAvgSpeedBronze: Boolean = false
+    private var recMaxSpeedGold: Boolean = false
+    private var recMaxSpeedSilver: Boolean = false
+    private var recMaxSpeedBronze: Boolean = false
 
 
 
@@ -459,6 +487,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun initObjects(){
         initChrono()
         hideLayouts()
+        initMedallas()
         initMetrics()
         initSwitchs()
         initIntervalMode()
@@ -473,7 +502,32 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         recuperarPreferencias()
 
     }
-//iniciar los totales en 0 para el usuario que no tenga registros
+
+    private fun initMedallas() {
+        medalsListSportSelectedDistance = arrayListOf()
+        medalsListSportSelectedAvgSpeed = arrayListOf()
+        medalsListSportSelectedMaxSpeed = arrayListOf()
+        medalsListSportSelectedDistance.clear()
+        medalsListSportSelectedAvgSpeed.clear()
+        medalsListSportSelectedMaxSpeed.clear()
+
+        medalsListBikeDistance = arrayListOf()
+        medalsListBikeAvgSpeed = arrayListOf()
+        medalsListBikeMaxSpeed = arrayListOf()
+        medalsListBikeDistance.clear()
+        medalsListBikeAvgSpeed.clear()
+        medalsListBikeMaxSpeed.clear()
+
+
+        medalsListRunningDistance = arrayListOf()
+        medalsListRunningAvgSpeed = arrayListOf()
+        medalsListRunningMaxSpeed = arrayListOf()
+        medalsListRunningDistance.clear()
+        medalsListRunningAvgSpeed.clear()
+        medalsListRunningMaxSpeed.clear()
+    }
+
+    //iniciar los totales en 0 para el usuario que no tenga registros
     private fun initTotales(){
         totalesBicileta = Totales()
 
@@ -518,6 +572,114 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
     private fun cargarDesdeBD(){
         cargarTodosLosUsuarios()
+        cargarMedallasUsuario()
+    }
+
+    private fun cargarMedallasUsuario() {
+        loadMedalsBike()
+        loadMedalsRunning()
+    }
+
+    private fun loadMedalsRunning(){
+        var dbRecords = FirebaseFirestore.getInstance()
+        dbRecords.collection("carrerasCarrera")
+            .orderBy("distancia", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents){
+                    if (document["usuario"] == useremail)
+                        medalsListRunningDistance.add (document["distancia"].toString().toDouble())
+                    if (medalsListRunningDistance.size == 3) break
+                }
+                while (medalsListRunningDistance.size < 3) medalsListRunningDistance.add(0.0)
+
+            }
+            .addOnFailureListener { exception ->
+                Log.w(ContentValues.TAG, "Error getting documents: ", exception)
+            }
+
+        dbRecords.collection("carrerasCarrera")
+            .orderBy("avgSpeed", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    if (document["usuario"] == useremail)
+                        medalsListRunningAvgSpeed.add (document["avgSpeed"].toString().toDouble())
+                    if (medalsListRunningAvgSpeed.size == 3) break
+                }
+                while (medalsListRunningAvgSpeed.size < 3) medalsListRunningAvgSpeed.add(0.0)
+
+            }
+            .addOnFailureListener { exception ->
+                Log.w(ContentValues.TAG, "Error getting documents: ", exception)
+            }
+
+        dbRecords.collection("carrerasCarrera")
+            .orderBy("maxSpeed", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    if (document["usuario"] == useremail)
+                        medalsListRunningMaxSpeed.add (document["maxSpeed"].toString().toDouble())
+                    if (medalsListRunningMaxSpeed.size == 3) break
+                }
+                while (medalsListRunningMaxSpeed.size < 3) medalsListRunningMaxSpeed.add(0.0)
+
+            }
+            .addOnFailureListener { exception ->
+                Log.w(ContentValues.TAG, "Error getting documents: ", exception)
+            }
+    }
+
+    private fun loadMedalsBike() {
+        var dbRecords = FirebaseFirestore.getInstance()
+        dbRecords.collection("carrerasBicicleta")
+            .orderBy("distancia", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents){
+                    if (document["usuario"] == useremail)
+                        medalsListBikeDistance.add (document["distancia"].toString().toDouble())
+                    if (medalsListBikeDistance.size == 3) break
+                }
+                while (medalsListBikeDistance.size < 3) medalsListBikeDistance.add(0.0)
+
+            }
+            .addOnFailureListener { exception ->
+                Log.w(ContentValues.TAG, "Error getting documents: ", exception)
+            }
+
+        dbRecords.collection("carrerasBicicleta")
+            .orderBy("avgSpeed", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    if (document["usuario"] == useremail)
+                        medalsListBikeAvgSpeed.add (document["avgSpeed"].toString().toDouble())
+                    if (medalsListBikeAvgSpeed.size == 3) break
+                }
+                while (medalsListBikeAvgSpeed.size < 3) medalsListBikeAvgSpeed.add(0.0)
+
+            }
+            .addOnFailureListener { exception ->
+                Log.w(ContentValues.TAG, "Error getting documents: ", exception)
+            }
+
+        dbRecords.collection("carrerasBicicleta")
+            .orderBy("maxSpeed", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    if (document["usuario"] == useremail)
+                        medalsListBikeMaxSpeed.add (document["maxSpeed"].toString().toDouble())
+                    if (medalsListBikeMaxSpeed.size == 3) break
+                }
+                while (medalsListBikeMaxSpeed.size < 3) medalsListBikeMaxSpeed.add(0.0)
+
+            }
+            .addOnFailureListener { exception ->
+                Log.w(ContentValues.TAG, "Error getting documents: ", exception)
+            }
     }
 
     private fun cargarTodosLosUsuarios(){
@@ -852,13 +1014,33 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
     override fun onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START)
-        } else if (lyPopupRun.isVisible) {
-            cerrarVentanaCorredor()
-        } else {
-            super.onBackPressed()
+        super.onBackPressed()
+        if (lyPopupRun.isVisible) cerrarVentanaCorredor()
+        else{
+            if (drawer.isDrawerOpen(GravityCompat.START))
+                drawer.closeDrawer(GravityCompat.START)
+            else
+                if (timeInSeconds > 0L) resetClicked()
+            alertSignOut()
         }
+
+
+    }
+    private fun alertSignOut(){
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.alertSignOutTitle))
+            .setMessage(R.string.alertSignOutTDescription)
+            .setPositiveButton(android.R.string.ok,
+                DialogInterface.OnClickListener { dialog, which ->
+                    //botón OK pulsado
+                    singOut()
+                })
+            .setNegativeButton(android.R.string.cancel,
+                DialogInterface.OnClickListener { dialog, which ->
+                    //botón cancel pulsado
+                })
+            .setCancelable(true)
+            .show()
     }
 //obtener los valores proporcionados por el gps
     private fun initPermissionsGPS(){
@@ -997,6 +1179,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun llamarRecordActivity() {
+
+        if (startButtonClicked) manageStartStop()
+
         val intent = Intent(this, RecordActivity::class.java)
         startActivity(intent)
     }
@@ -1131,9 +1316,17 @@ private fun registerNewLocation(location: Location){
                 updateSpeeds(distanceInterval)
                 refreshInterfaceData()
 
+
+
+                saveLocation(location)
+
                 var newPos = LatLng (new_latitude, new_longitude)
                 (listPoints as ArrayList<LatLng>).add(newPos)
                 crearPolilineas(listPoints)
+
+                checkMedals(distance, avgSpeed, maxSpeed)
+
+
 
             }
 
@@ -1165,6 +1358,190 @@ private fun registerNewLocation(location: Location){
     }
 
 }
+
+    private fun checkMedals(d: Double, aS: Double, mS: Double){
+        if (d>0){
+            if (d >= medalsListSportSelectedDistance.get(0)){
+                recDistanceGold = true; recDistanceSilver = false; recDistanceBronze = false
+                notifyMedal("distancia", "gold", "PERSONAL")
+            }
+            else{
+                if (d >= medalsListSportSelectedDistance.get(1)){
+                    recDistanceGold = false; recDistanceSilver = true; recDistanceBronze = false
+                    notifyMedal("distancia", "silver", "PERSONAL")
+                }
+                else{
+                    if (d >= medalsListSportSelectedDistance.get(2)){
+                        recDistanceGold = false; recDistanceSilver = false; recDistanceBronze = true
+                        notifyMedal("distancia", "bronze", "PERSONAL")
+                    }
+                }
+            }
+        }
+
+        if (aS > 0){
+            if (aS >= medalsListSportSelectedAvgSpeed.get(0)){
+                recAvgSpeedGold = true; recAvgSpeedSilver = false; recAvgSpeedBronze = false
+                notifyMedal("avgSpeed", "gold", "PERSONAL")
+            }
+            else{
+                if (aS >= medalsListSportSelectedAvgSpeed.get(1)){
+                    recAvgSpeedGold = false; recAvgSpeedSilver = true; recAvgSpeedBronze = false
+                    notifyMedal("avgSpeed", "silver", "PERSONAL")
+                }
+                else{
+                    if (aS >= medalsListSportSelectedAvgSpeed.get(2)){
+                        recAvgSpeedGold = false; recAvgSpeedSilver = false; recAvgSpeedBronze = true
+                        notifyMedal("avgSpeed", "bronze", "PERSONAL")
+                    }
+                }
+            }
+        }
+
+        if (mS > 0){
+            if (mS >= medalsListSportSelectedMaxSpeed.get(0)){
+                recMaxSpeedGold = true; recMaxSpeedSilver = false; recMaxSpeedBronze = false
+                notifyMedal("maxSpeed", "gold", "PERSONAL")
+            }
+            else{
+                if (mS >= medalsListSportSelectedMaxSpeed.get(1)){
+                    recMaxSpeedGold = false; recMaxSpeedSilver = true; recMaxSpeedBronze = false
+                    notifyMedal("maxSpeed", "silver", "PERSONAL")
+                }
+                else{
+                    if (mS >= medalsListSportSelectedMaxSpeed.get(2)){
+                        recMaxSpeedGold = false; recMaxSpeedSilver = false; recMaxSpeedBronze = true
+                        notifyMedal("maxSpeed", "bronze", "PERSONAL")
+                    }
+                }
+            }
+        }
+
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun notifyMedal(category: String, metal: String, scope: String){
+        var CHANNEL_ID = "NEW $scope RECORD - $deporteSeleccionado"
+
+        var textNotification =""
+        when (metal){
+            "gold"-> textNotification = "1ª "
+            "silver"-> textNotification = "2ª "
+            "bronze"-> textNotification = "3ª "
+        }
+        textNotification += "mejor marca personal en "
+        when (category){
+            "distancia"-> textNotification += "distancia recorrida"
+            "avgSpeed"-> textNotification += " velocidad promedio"
+            "maxSpeed"-> textNotification += " velocidad máxima alcanzada"
+        }
+
+        var iconNotificacion: Int = 0
+        when (metal){
+            "gold" -> iconNotificacion = R.drawable.medalgold
+            "silver"-> iconNotificacion = R.drawable.medalsilver
+            "bronze"-> iconNotificacion = R.drawable.medalbronze
+        }
+
+        var builder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(iconNotificacion)
+            .setContentTitle(CHANNEL_ID)
+            .setContentText(textNotification)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+
+        var notificationId: Int = 0
+        when (category){
+            "distancia"->
+                when (metal){
+                    "gold"->notificationId = 11
+                    "silver"->notificationId = 12
+                    "bronze"->notificationId = 13
+                }
+            "avgSpeed"->
+                when (metal){
+                    "gold"->notificationId = 21
+                    "silver"->notificationId = 22
+                    "bronze"->notificationId = 23
+                }
+            "maxSpeed"->
+                when (metal){
+                    "gold"->notificationId = 31
+                    "silver"->notificationId = 32
+                    "bronze"->notificationId = 33
+                }
+        }
+
+        with(NotificationManagerCompat.from(this)) {
+            // notificationId is a unique int for each notification that you must define
+            notify(notificationId, builder.build())
+        }
+
+    }
+    private fun resetMedals(){
+        recDistanceGold = false
+        recDistanceSilver = false
+        recDistanceBronze = false
+        recAvgSpeedGold = false
+        recAvgSpeedSilver = false
+        recAvgSpeedBronze = false
+        recMaxSpeedGold = false
+        recMaxSpeedSilver = false
+        recMaxSpeedBronze = false
+
+    }
+//guardar ubicaciones del usuario durante la carrera
+    private fun saveLocation(location: Location){
+        var dirName = dateRun + startTimeRun
+        dirName = dirName.replace("/", "")
+        dirName = dirName.replace(":", "")
+
+        var docName = timeInSeconds.toString()
+        while (docName.length < 4) docName = "0" + docName
+
+        var ms: Boolean
+        ms = speed == maxSpeed && speed > 0
+
+
+        var dbLocation = FirebaseFirestore.getInstance()
+        dbLocation.collection("ubicacion/$useremail/$dirName").document(docName).set(hashMapOf(
+            "time" to SimpleDateFormat("HH:mm:ss").format(Date()),
+            "latitude" to location.latitude,
+            "longitude" to location.longitude,
+            "altitude" to location.altitude,
+            "hasAltitude" to location.hasAltitude(),
+            "speedFromGoogle" to location.speed,
+            "speedFromLocal" to speed,
+            "maxSpeed" to ms,
+            "color" to tvChrono.currentTextColor
+        ))
+
+    }
+//borrar registros de la carrera actual cuando se finalice una carrera
+    fun borrarCarrera(v:View){
+
+
+        var id:String = useremail + dateRun + startTimeRun
+        id = id.replace(":", "")
+        id = id.replace("/", "")
+
+        var lyPopUpRun = findViewById<LinearLayout>(R.id.lyPopupRun)
+
+        var currentRun = Carreras()
+        currentRun.distancia = roundNumber(distance.toString(),1).toDouble()
+        currentRun.avgSpeed = roundNumber(avgSpeed.toString(),1).toDouble()
+        currentRun.maxSpeed = roundNumber(maxSpeed.toString(),1).toDouble()
+        currentRun.duracion = tvChrono.text.toString()
+
+        deleteRunAndLinkedData(id, deporteSeleccionado, lyPopUpRun, currentRun)
+       cargarMedallasUsuario()
+       establecerNivelDeporte(deporteSeleccionado)
+       cerrarVentanaCorredor()
+
+    }
+
+
+
     //crear polilineas para la ruta del mapa
     private fun crearPolilineas(listPosition: Iterable<LatLng>){
         val polylineOptions = PolylineOptions()
@@ -1302,6 +1679,9 @@ private fun registerNewLocation(location: Location){
     private fun manageRun(){
 
         if (timeInSeconds.toInt() == 0){
+            //obtenemos la fecha del dispositivo
+            dateRun = SimpleDateFormat("yyyy/MM/dd").format(Date())
+            startTimeRun = SimpleDateFormat("HH:mm:ss").format(Date())
 
             fbCamara.isVisible = true
             //deshabilitamos los componentes de la interfaz mientras esta en la carrera
@@ -1382,13 +1762,86 @@ private fun registerNewLocation(location: Location){
     //reiniciamos el cronometro finalizamos la carrera y reiniciamos la interfaz
     private fun resetClicked(){
         guardarPreferencias()
+        guardarDatosCarrera()
         mostrarVentanaEmergente()
         actualizarTotalesUsuario()
         establecerNivelDeporte(deporteSeleccionado)
         resetTimeView()
         resetInterface()
-    }
+        resetMedals()
 
+    }
+//enviamos la informacion del usuario a la base de datos y todos sus datos de la carrera
+    private fun guardarDatosCarrera() {
+        var id:String = useremail + dateRun + startTimeRun
+        id = id.replace(":", "")
+        id = id.replace("/", "")
+
+        var guardarDuracion = tvChrono.text.toString()
+
+        var guardarDistancia = roundNumber(distance.toString(),1)
+        var guardarAvgSpeed = roundNumber(avgSpeed.toString(),1)
+        var guardarMaxSpeed = roundNumber(maxSpeed.toString(),1)
+
+        var centerLatitude = (minLatitude!! + maxLatitude!!) / 2
+        var centerLongitude = (minLongitude!! + maxLongitude!!) / 2
+
+        var medalDistance = "none"
+        var medalAvgSpeed = "none"
+        var medalMaxSpeed = "none"
+
+        if (recDistanceGold) medalDistance = "gold"
+        if (recDistanceSilver) medalDistance = "silver"
+        if (recDistanceBronze) medalDistance = "bronze"
+
+        if (recAvgSpeedGold) medalAvgSpeed = "gold"
+        if (recAvgSpeedSilver) medalAvgSpeed = "silver"
+        if (recAvgSpeedBronze) medalAvgSpeed = "bronze"
+
+        if (recMaxSpeedGold) medalMaxSpeed = "gold"
+        if (recMaxSpeedSilver) medalMaxSpeed = "silver"
+        if (recMaxSpeedBronze) medalMaxSpeed = "bronze"
+
+        var collection = "carreras$deporteSeleccionado"
+        var bdCarrera = FirebaseFirestore.getInstance()
+        bdCarrera.collection(collection).document(id).set(hashMapOf(
+            "usuario" to useremail,
+            "fecha" to dateRun,
+            "inicioTiempo" to startTimeRun,
+            "deporte" to deporteSeleccionado,
+            "activatedGPS" to activatedGPS,
+            "duracion" to guardarDuracion,
+            "distancia" to guardarDistancia.toDouble(),
+            "avgSpeed" to guardarAvgSpeed.toDouble(),
+            "maxSpeed" to guardarMaxSpeed.toDouble(),
+            "minAltitude" to minAltitude,
+            "maxAltitude" to maxAltitude,
+            "minLatitude" to minLatitude,
+            "maxLatitude" to maxLatitude,
+            "minLongitude" to minLongitude,
+            "maxLongitude" to maxLongitude,
+            "centerLatitude" to centerLatitude,
+            "centerLongitude" to centerLongitude,
+            "medalDistance" to medalDistance,
+            "medalAvgSpeed" to medalAvgSpeed,
+            "medalMaxSpeed" to medalMaxSpeed,
+        ))
+//actualizamos valores si el modo intervalo esta activado
+        if (swIntervalMode.isChecked){
+            bdCarrera.collection(collection).document(id).update("intervalMode", true)
+            bdCarrera.collection(collection).document(id).update("intervalDuration", npDurationInterval.value)
+            bdCarrera.collection(collection).document(id).update("runningTime", tvRunningTime.text.toString())
+            bdCarrera.collection(collection).document(id).update("walkingTime", tvWalkingTime.text.toString())
+        }
+
+        if (swChallenges.isChecked){
+            if (challengeDistance > 0f)
+                bdCarrera.collection(collection).document(id).update("challengeDistance", roundNumber(challengeDistance.toString(), 1).toDouble())
+            if (challengeDuration > 0)
+                bdCarrera.collection(collection).document(id).update("challengeDuration", getFormattedStopWatch(challengeDuration.toLong()))
+        }
+
+    }
 
 
     private fun actualizarTotalesUsuario(){
@@ -1457,12 +1910,13 @@ private fun registerNewLocation(location: Location){
 
         activatedGPS = true
         flagSavedLocation = false
-        initStopWatch()
 
     }
 
     //reiniciamos la vista del usuario
     private fun resetTimeView(){
+
+        initStopWatch()
         manageEnableButtonsRun(false, true)
 
         //val btStart: LinearLayout = findViewById(R.id.btStart)
@@ -1602,41 +2056,29 @@ private fun registerNewLocation(location: Location){
             "Bicicleta" -> {
                 LIMITE_DISTANCIA_ACEPTADA = LIMITE_DISTANCIA_ACEPTADA_CICLISTA
 
-                lySportBike.setBackgroundColor(
-                    ContextCompat.getColor(
-                        mainContext,
-                        R.color.verde_oscuro
-                    )
-                )
-                lySportRunning.setBackgroundColor(
-                    ContextCompat.getColor(
-                        mainContext,
-                        R.color.gray_medium
-                    )
-                )
+                lySportBike.setBackgroundColor(ContextCompat.getColor(mainContext, R.color.verde_oscuro))
+                lySportRunning.setBackgroundColor(ContextCompat.getColor(mainContext, R.color.gray_medium))
 
                 nivelDeporteSeleccionado = nivelBicicleta
                 totalesDeporteSeleccionado = totalesBicileta
+
+                medalsListSportSelectedDistance = medalsListBikeDistance
+                medalsListSportSelectedAvgSpeed = medalsListBikeAvgSpeed
+                medalsListSportSelectedMaxSpeed = medalsListBikeMaxSpeed
             }
 
             "Carrera" -> {
                 LIMITE_DISTANCIA_ACEPTADA = LIMITE_DISTANCIA_ACEPTADA_CORREDOR
 
-                lySportBike.setBackgroundColor(
-                    ContextCompat.getColor(
-                        mainContext,
-                        R.color.gray_medium
-                    )
-                )
-                lySportRunning.setBackgroundColor(
-                    ContextCompat.getColor(
-                        mainContext,
-                        R.color.verde_oscuro
-                    )
-                )
+                lySportBike.setBackgroundColor(ContextCompat.getColor(mainContext, R.color.gray_medium))
+                lySportRunning.setBackgroundColor(ContextCompat.getColor(mainContext, R.color.verde_oscuro))
 
                 nivelDeporteSeleccionado = nivelCorriendo
                 totalesDeporteSeleccionado = carrerasTotales
+
+                medalsListSportSelectedDistance = medalsListRunningDistance
+                medalsListSportSelectedAvgSpeed = medalsListRunningAvgSpeed
+                medalsListSportSelectedMaxSpeed = medalsListRunningMaxSpeed
             }
         }
 
@@ -1812,18 +2254,32 @@ private fun registerNewLocation(location: Location){
         tvTotalTime.text = getString(R.string.PopUpTotalTime) + formatedTime
     }
     private fun showMedals(){
-        var lyMedalsRun = findViewById<LinearLayout>(R.id.lyMedalsRun)
 
-        // Hide medals block
-        if(activatedGPS){
-            //lyMedalsRun.visibility = View.VISIBLE
-            lyMedalsRun.getLayoutParams().height = LinearLayout.LayoutParams.WRAP_CONTENT // LayoutParams: android.view.ViewGroup.LayoutParams
-        }
-        else {
-            //lyMedalsRun.visibility = View.GONE
-            lyMedalsRun.getLayoutParams().height = 0
-        }
-        lyMedalsRun.requestLayout() //It is necesary to refresh the screen
+        val ivMedalDistance = findViewById<ImageView>(R.id.ivMedalDistance)
+        val ivMedalAvgSpeed = findViewById<ImageView>(R.id.ivMedalAvgSpeed)
+        val ivMedalMaxSpeed = findViewById<ImageView>(R.id.ivMedalMaxSpeed)
+
+        val tvMedalDistanceTitle = findViewById<TextView>(R.id.tvMedalDistanceTitle)
+        val tvMedalAvgSpeedTitle = findViewById<TextView>(R.id.tvMedalAvgSpeedTitle)
+        val tvMedalMaxSpeedTitle = findViewById<TextView>(R.id.tvMedalMaxSpeedTitle)
+
+        if (recDistanceGold) ivMedalDistance.setImageResource(R.drawable.medalgold)
+        if (recDistanceSilver) ivMedalDistance.setImageResource(R.drawable.medalsilver)
+        if (recDistanceBronze) ivMedalDistance.setImageResource(R.drawable.medalbronze)
+        if (recDistanceGold || recDistanceSilver || recDistanceBronze)
+            tvMedalDistanceTitle.setText(R.string.medalDistanceDescription)
+
+        if (recAvgSpeedGold) ivMedalAvgSpeed.setImageResource(R.drawable.medalgold)
+        if (recAvgSpeedSilver) ivMedalAvgSpeed.setImageResource(R.drawable.medalsilver)
+        if (recAvgSpeedBronze) ivMedalAvgSpeed.setImageResource(R.drawable.medalbronze)
+        if (recAvgSpeedGold || recAvgSpeedSilver || recAvgSpeedBronze)
+            tvMedalAvgSpeedTitle.setText(R.string.medalAvgSpeedDescription)
+
+        if (recMaxSpeedGold) ivMedalMaxSpeed.setImageResource(R.drawable.medalgold)
+        if (recMaxSpeedSilver) ivMedalMaxSpeed.setImageResource(R.drawable.medalsilver)
+        if (recMaxSpeedBronze) ivMedalMaxSpeed.setImageResource(R.drawable.medalbronze)
+        if (recMaxSpeedGold || recMaxSpeedSilver || recMaxSpeedBronze)
+            tvMedalMaxSpeedTitle.setText(R.string.medalMaxSpeedDescription)
     }
     fun cerrarVentanaEmergente(v: View){
         cerrarVentanaCorredor()
@@ -1918,7 +2374,7 @@ private fun registerNewLocation(location: Location){
                 return true
             }
             R.id.action_history -> {
-                Toast.makeText(this, "Historial seleccionado", Toast.LENGTH_SHORT).show()
+                llamarRecordActivity()
                 return true
             }
             R.id.action_premium -> {
