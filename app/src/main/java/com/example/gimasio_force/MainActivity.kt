@@ -3,6 +3,7 @@ package com.example.gimasio_force
 import android.Manifest
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.ContentValues
 import android.content.Context
 import android.content.DialogInterface
@@ -11,6 +12,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -1768,7 +1770,7 @@ private fun registerNewLocation(location: Location){
         establecerNivelDeporte(deporteSeleccionado)
         resetTimeView()
         resetInterface()
-        resetMedals()
+
 
     }
 //enviamos la informacion del usuario a la base de datos y todos sus datos de la carrera
@@ -1825,6 +1827,8 @@ private fun registerNewLocation(location: Location){
             "medalDistance" to medalDistance,
             "medalAvgSpeed" to medalAvgSpeed,
             "medalMaxSpeed" to medalMaxSpeed,
+            "ultimaFoto" to ultimaFoto,
+            "countFotos" to countFotos
         ))
 //actualizamos valores si el modo intervalo esta activado
         if (swIntervalMode.isChecked){
@@ -2288,8 +2292,9 @@ private fun registerNewLocation(location: Location){
         hidePopUpRun()
         var rlMain = findViewById<RelativeLayout>(R.id.rlMain)
         rlMain.isEnabled = true//habilitamos la ventana principal
-
         resetVariablesRun()
+        resetMedals()
+        seleccionarDeporte(deporteSeleccionado)
     }
 //registramos los datos de la carrera para mostrarlos
     private fun mostrarDatosCarrera(){
@@ -2382,7 +2387,7 @@ private fun registerNewLocation(location: Location){
                 return true
             }
             R.id.action_clear_prefs -> {
-                Toast.makeText(this, "Borrar preferencias", Toast.LENGTH_SHORT).show()
+                alertaLimpiarPreferencias()
                 return true
             }
             R.id.action_logout -> {
@@ -2390,9 +2395,16 @@ private fun registerNewLocation(location: Location){
                 return true
             }
             R.id.action_ad_settings -> {
-                Toast.makeText(this, "Configuración de anuncios", Toast.LENGTH_SHORT).show()
+                val url = "https://www.uth.hn/" // URL hacia UTH
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                try {
+                    startActivity(intent)
+                } catch (e: ActivityNotFoundException) {
+                    Toast.makeText(this, "No se pudo abrir el navegador", Toast.LENGTH_SHORT).show()
+                }
                 return true
             }
+
 
         }
         return super.onOptionsItemSelected(item)

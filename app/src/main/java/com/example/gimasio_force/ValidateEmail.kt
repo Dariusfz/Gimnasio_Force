@@ -1,6 +1,7 @@
 package com.example.gimasio_force
 
 
+import android.util.Patterns
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -14,5 +15,6 @@ class ValidateEmail {
             mat = pat!!.matcher(email)
             return mat!!.find()
         }
+
     }
 }

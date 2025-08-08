@@ -1942,7 +1942,7 @@
                     android:backgroundTint="@color/white"
                     android:src="@android:drawable/ic_menu_camera"
                     app:maxImageSize="40dp"
-                    android:onClick="takePicture"/>
+                  />
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/fbShareRun"
                     android:layout_width="wrap_content"
@@ -1951,7 +1951,7 @@
                     android:backgroundTint="@color/white"
                     android:src="@android:drawable/ic_menu_share"
                     app:maxImageSize="40dp"
-                    android:onClick="shareRun"/>
+                   />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

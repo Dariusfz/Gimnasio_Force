@@ -93,7 +93,14 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.12.0")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
 
+    //recyclerview
     implementation ("androidx.recyclerview:recyclerview:1.4.0")
+
+    //almacenamiento firestore
+    implementation ("com.google.firebase:firebase-firestore-ktx:23.0.3")
+    implementation ("com.google.firebase:firebase-firestore:21.4.0")
+    implementation ("com.google.firebase:firebase-storage-ktx:20.0.0")
+    implementation ("com.google.firebase:firebase-database-ktx:20.0.2")
 
 
 

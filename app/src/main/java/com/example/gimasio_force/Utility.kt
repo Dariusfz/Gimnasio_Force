@@ -10,12 +10,18 @@ import android.widget.LinearLayout
 import com.example.gimasio_force.LoginActivity.Companion.useremail
 import com.example.gimasio_force.MainActivity.Companion.activatedGPS
 import com.example.gimasio_force.MainActivity.Companion.carrerasTotales
+import com.example.gimasio_force.MainActivity.Companion.countFotos
 import com.example.gimasio_force.MainActivity.Companion.totalesBicileta
 import com.example.gimasio_force.MainActivity.Companion.totalesDeporteSeleccionado
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
 import com.google.firebase.firestore.Query
+import com.google.firebase.storage.StorageReference
 import java.util.concurrent.TimeUnit
+
 
 
 object Utility {
@@ -114,6 +120,9 @@ fun animateViewofFloat(v: View, attr: String, value: Float, time: Long){
 
         if (activatedGPS) deleteLocations(idRun, useremail)
         //si habia fotos, borramos todas las fotos
+        if(countFotos>0) deletePicturesRun(idRun)
+
+
         updateTotals(cr)
         checkRecords(cr, sport, useremail)
         deleteRun(idRun, sport, ly)
@@ -135,6 +144,28 @@ fun animateViewofFloat(v: View, attr: String, value: Float, time: Long){
             }
             .addOnFailureListener { exception ->
                 Log.w(ContentValues.TAG, "Error getting documents: ", exception)
+
+            }
+    }
+
+    private fun deletePicturesRun(idRun: String) {
+        var idFolder = idRun.subSequence(useremail.length, idRun.length).toString()
+        // val delRef = FirebaseStorage.getInstance().getReference("images/$useremail/$idFolder")
+        var delRef: StorageReference
+        val storage = Firebase.storage
+        val listRef = storage.reference.child("imagenes/$useremail/$idFolder")
+        listRef.listAll()
+            // .addOnSuccessListener { (items, prefixes) ->
+            .addOnSuccessListener { listResult ->
+                //items.forEach { item ->
+                listResult.items.forEach { item ->
+                    val storageRef = storage.reference
+                    //val deleteRef = storageRef.child((item.path))
+                    delRef = storageRef.child((item.path))
+                    delRef.delete()
+                }
+            }
+            .addOnFailureListener {
 
             }
     }
@@ -181,19 +212,19 @@ fun animateViewofFloat(v: View, attr: String, value: Float, time: Long){
     private fun checkAvgSpeedRecord(cr: Carreras, sport: String, user: String){
         if (cr.avgSpeed!! == totalesDeporteSeleccionado.recordVelocidadPromedio){
             var dbRecords = FirebaseFirestore.getInstance()
-            dbRecords.collection("runs$sport")
+            dbRecords.collection("carreras$sport")
                 .orderBy("avgSpeed", Query.Direction.DESCENDING)
-                .whereEqualTo("user", user)
+                .whereEqualTo("usuario", user)
                 .get()
                 .addOnSuccessListener { documents ->
 
                     if (documents.size() == 1)  totalesDeporteSeleccionado.recordVelocidadPromedio = 0.0
                     else  totalesDeporteSeleccionado.recordVelocidadPromedio = documents.documents[1].get("avgSpeed").toString().toDouble()
 
-                    var collection = "totals$sport"
+                    var collection = "totales$sport"
                     var dbUpdateTotals = FirebaseFirestore.getInstance()
                     dbUpdateTotals.collection(collection).document(user)
-                        .update("recordAvgSpeed", totalesDeporteSeleccionado.recordVelocidadPromedio)
+                        .update("recordVelocidadPromedio", totalesDeporteSeleccionado.recordVelocidadPromedio)
 
                     totalsChecked++
                     if (totalsChecked == 3) refreshTotalsSport(sport)
@@ -207,19 +238,19 @@ fun animateViewofFloat(v: View, attr: String, value: Float, time: Long){
     private fun checkMaxSpeedRecord(cr: Carreras, sport: String, user: String){
         if (cr.maxSpeed!! == totalesDeporteSeleccionado.recordVelocidad){
             var dbRecords = FirebaseFirestore.getInstance()
-            dbRecords.collection("runs$sport")
+            dbRecords.collection("carreras$sport")
                 .orderBy("maxSpeed", Query.Direction.DESCENDING)
-                .whereEqualTo("user", user)
+                .whereEqualTo("usuario", user)
                 .get()
                 .addOnSuccessListener { documents ->
 
                     if (documents.size() == 1)  totalesDeporteSeleccionado.recordVelocidad = 0.0
                     else  totalesDeporteSeleccionado.recordVelocidad = documents.documents[1].get("maxSpeed").toString().toDouble()
 
-                    var collection = "totals$sport"
+                    var collection = "totales$sport"
                     var dbUpdateTotals = FirebaseFirestore.getInstance()
                     dbUpdateTotals.collection(collection).document(user)
-                        .update("recordSpeed", totalesDeporteSeleccionado.recordVelocidad)
+                        .update("recordVelocidad", totalesDeporteSeleccionado.recordVelocidad)
 
                     totalsChecked++
                     if (totalsChecked == 3) refreshTotalsSport(sport)

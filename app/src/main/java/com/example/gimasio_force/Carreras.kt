@@ -33,6 +33,10 @@ data class Carreras(
 
     var medalDistance: String ?= null,
     var medalAvgSpeed: String ?= null,
-    var medalMaxSpeed: String ?= null
+    var medalMaxSpeed: String ?= null,
+
+    var countFotos: Int ?= null,
+    var ultimaFoto: String ?= null
+
 
 )

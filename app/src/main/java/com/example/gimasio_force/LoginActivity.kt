@@ -28,6 +28,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 
 class LoginActivity : AppCompatActivity() {
@@ -60,6 +61,7 @@ class LoginActivity : AppCompatActivity() {
         etPassword = findViewById(R.id.etPassword)
         mAuth = FirebaseAuth.getInstance()
 
+
         btnFacebook = findViewById(R.id.btnSingFacebook)
 
        manageButtonLogin()
@@ -71,26 +73,21 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun mensajeFacebook(){
-        Toast.makeText(this,"Lo Sentimos, modulo no disponible, intente con otro método :)", Toast.LENGTH_SHORT).show()
-    }
-    //verifica si hay un usuario logeado para iniciar sesion directamente
     public override fun onStart() {
         super.onStart()
 
         val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser != null && currentUser.isEmailVerified) {
-            goHome(currentUser.email.toString(), currentUser.providerId)
-        } else if (currentUser != null) {
-            // Usuario logueado pero correo no verificado
-            FirebaseAuth.getInstance().signOut()
-            Toast.makeText(
-                this,
-                "Por favor verifica tu correo electrónico antes de iniciar sesión",
-                Toast.LENGTH_LONG
-            ).show()
-        }
+        if (currentUser != null)  goHome(currentUser.email.toString(), currentUser.providerId)
+
     }
+
+    private fun mensajeFacebook(){
+        Toast.makeText(this,"Lo Sentimos, modulo no disponible, intente con otro método :)", Toast.LENGTH_SHORT).show()
+    }
+    //verifica si hay un usuario logeado para iniciar sesion directamente
+
+
+
 //controlar que al presionar el boton de atras vaya a la pantalla de inicio
     @SuppressLint("SuspiciousIndentation")
     override fun onBackPressed() {
@@ -104,139 +101,47 @@ class LoginActivity : AppCompatActivity() {
 
 
 //verifcar si los campos son correctos para iniciar sesion
-   private fun manageButtonLogin(){
-        var tvLogin = findViewById<TextView>(R.id.tvLogin)
-        email = etEmail.text.toString()
-        password = etPassword.text.toString()
+private fun manageButtonLogin(){
+    var tvLogin = findViewById<TextView>(R.id.tvLogin)
+    email = etEmail.text.toString()
+    password = etPassword.text.toString()
 
-        if (TextUtils.isEmpty(password) || ValidateEmail.isEmail(email) == false){
+    if (TextUtils.isEmpty(password) || ValidateEmail.isEmail(email) == false){
 
-            tvLogin.setBackgroundColor(ContextCompat.getColor(this, R.color.gray))
-            tvLogin.isEnabled = false
-        }
-        else{
-            tvLogin.setBackgroundColor(ContextCompat.getColor(this, R.color.blue))
-            tvLogin.isEnabled = true
-        }
+        tvLogin.setBackgroundColor(ContextCompat.getColor(this, R.color.gray))
+        tvLogin.isEnabled = false
     }
+    else{
+        tvLogin.setBackgroundColor(ContextCompat.getColor(this, R.color.verde_claro))
+        tvLogin.isEnabled = true
+    }
+}
 
     fun login(view: View) {
         loginUser()
     }
-    private fun loginUser() {
+
+
+    private fun loginUser(){
         email = etEmail.text.toString()
         password = etPassword.text.toString()
 
         mAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    val user = mAuth.currentUser
-                    if (user?.isEmailVerified == true) {
-                        goHome(email, "email")
-                    } else {
-                        // Correo no verificado
-                        mAuth.signOut() // Cerrar sesión automáticamente
-                        Toast.makeText(
-                            this,
-                            "Por favor verifica tu correo electrónico primero",
-                            Toast.LENGTH_LONG
-                        ).show()
-
-                        // Opcional: Reenviar correo de verificación
-                        sendEmailVerification()
+            .addOnCompleteListener(this){ task ->
+                if (task.isSuccessful)  goHome(email, "email")
+                else{
+                    if (lyTerms.visibility == View.INVISIBLE) lyTerms.visibility = View.VISIBLE
+                    else{
+                        var cbAcept = findViewById<CheckBox>(R.id.cbAcept)
+                        if (cbAcept.isChecked) register()
                     }
-                } else {
-                    // Manejo de errores mejorado
-                    handleLoginError(task.exception)
                 }
             }
     }
 
-    private fun handleLoginError(exception: Exception?) {
-        when (exception) {
-            is FirebaseAuthInvalidUserException -> {
-                // Usuario no existe - verificar si quiere registrarse
-                showRegistrationOption()
-            }
-            is FirebaseAuthInvalidCredentialsException -> {
-                // Contraseña incorrecta para usuario existente
-                Toast.makeText(
-                    this,
-                    "Datos incorrectos",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-            else -> {
-                // Otro tipo de error
-                Toast.makeText(
-                    this,
-                    "Error al iniciar sesión: ${exception?.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    }
-
-    private fun showRegistrationOption() {
-        val dialog = AlertDialog.Builder(this)
-            .setTitle("Usuario no registrado")
-            .setMessage("¿Deseas registrarte con este correo?")
-            .setPositiveButton("Sí") { _, _ ->
-                if (ValidateEmail.isEmail(email)) {
-                    register()
-                } else {
-                    Toast.makeText(this, "Ingresa un correo válido", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .setNegativeButton("No", null)
-            .create()
-
-        dialog.show()
-    }
 
 
-    private fun register() {
-        if (!ValidateEmail.isEmail(email)) {
-            Toast.makeText(this, "Ingresa un correo válido", Toast.LENGTH_SHORT).show()
-            return
-        }
 
-        if (password.length < 6) {
-            Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // Enviar correo de verificación
-                    sendEmailVerification()
-
-                    // Guardar datos del usuario
-                    val dateRegister = SimpleDateFormat("dd/MM/yyyy").format(Date())
-                    FirebaseFirestore.getInstance()
-                        .collection("users")
-                        .document(email)
-                        .set(hashMapOf(
-                            "user" to email,
-                            "dateRegister" to dateRegister,
-                            "emailVerified" to false
-                        ))
-
-                    Toast.makeText(
-                        this,
-                        "Registro exitoso. Se ha enviado un correo de verificación a $email",
-                        Toast.LENGTH_LONG
-                    ).show()
-                } else {
-                    Toast.makeText(
-                        this,
-                        "Error en el registro: ${task.exception?.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-    }
 
     private fun goHome(email: String, provider: String){
 
@@ -247,72 +152,34 @@ class LoginActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-  /*  private fun register() {
+    private fun register(){
         email = etEmail.text.toString()
         password = etPassword.text.toString()
 
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // Enviar correo de verificación
-                    sendEmailVerification()
+            .addOnCompleteListener {
+                if (it.isSuccessful){
 
-                    // Guardar datos del usuario
-                    val dateRegister = SimpleDateFormat("dd/MM/yyyy").format(Date())
-                    FirebaseFirestore.getInstance()
-                        .collection("users")
-                        .document(email)
-                        .set(hashMapOf(
-                            "user" to email,
-                            "dateRegister" to dateRegister,
-                            "emailVerified" to false // Añadir campo de verificación
-                        ))
-                } else {
-                    Toast.makeText(this, "Error en el registro: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
-    }*/
+                    var dateRegister = SimpleDateFormat("dd/MM/yyyy").format(Date())
+                    var dbRegister = FirebaseFirestore.getInstance()
+                    dbRegister.collection("users").document(email).set(hashMapOf(
+                        "user" to email,
+                        "dateRegister" to dateRegister
+                    ))
 
-    private fun sendEmailVerification() {
-        val user = FirebaseAuth.getInstance().currentUser
-        user?.sendEmailVerification()
-            ?.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Toast.makeText(
-                        this,
-                        "Se ha enviado un correo de verificación a $email",
-                        Toast.LENGTH_LONG
-                    ).show()
-                } else {
-                    Toast.makeText(
-                        this,
-                        "Error al enviar correo de verificación: ${task.exception?.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    goHome(email, "email")
                 }
+                else Toast.makeText(this, "Error, algo ha ido mal :(", Toast.LENGTH_SHORT).show()
             }
     }
 
-    fun goTerms(v: View){
+
+    fun goTerms(v: View) {
         val intent = Intent(this, TermsActivity::class.java)
-        startActivity(intent)
+        startActivityForResult(intent, 1) // Usamos un código de request
     }
 
-    fun forgotPassword(view: View) {
-        //startActivity(Intent(this, ForgotPasswordActivity::class.java))
-        resetPassword()
-    }
-    private fun resetPassword(){
-        var e = etEmail.text.toString()
-        if (!TextUtils.isEmpty(e)){
-            mAuth.sendPasswordResetEmail(e)//funcion para resetear contrasenia
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) Toast.makeText(this, "Email Enviado a $e", Toast.LENGTH_SHORT).show()
-                    else Toast.makeText(this, "No se encontró el usuario con este correo", Toast.LENGTH_SHORT).show()
-                }
-        }
-        else Toast.makeText(this, "Indica un email", Toast.LENGTH_SHORT).show()
-    }
+
 //iniciar sesion con google
 fun callSignInGoogle (view:View){
     signInGoogle()
@@ -356,7 +223,42 @@ fun callSignInGoogle (view:View){
                 Toast.makeText(this, "Error en la conexión con Google: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            // El usuario aceptó los términos
+            findViewById<CheckBox>(R.id.cbAcept).isChecked = true
+        }
     }
+
+    fun forgotPassword(view: View) {
+        resetPassword()
+    }
+    private fun resetPassword(){
+        var e = etEmail.text.toString()
+        if (!TextUtils.isEmpty(e)){
+            mAuth.sendPasswordResetEmail(e)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) Toast.makeText(this, "Email Enviado a $e", Toast.LENGTH_SHORT).show()
+                    else Toast.makeText(this, "No se encontró el usuario con este correo", Toast.LENGTH_SHORT).show()
+                }
+        }
+        else Toast.makeText(this, "Indica un email", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // Guardamos los valores de los campos
+        outState.putString("email", etEmail.text.toString())
+        outState.putString("password", etPassword.text.toString())
+        outState.putBoolean("termsVisible", lyTerms.visibility == View.VISIBLE)
+    }
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        // Restauramos los valores de los campos
+        etEmail.setText(savedInstanceState.getString("email", ""))
+        etPassword.setText(savedInstanceState.getString("password", ""))
+        lyTerms.visibility = if (savedInstanceState.getBoolean("termsVisible")) View.VISIBLE else View.INVISIBLE
+    }
+
 
 
 }
