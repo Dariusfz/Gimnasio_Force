@@ -67,7 +67,7 @@
     <TextView
        android:id="@+id/tvLogin"
         style="@style/viewCustom"
-        android:background="@color/blue"
+        android:background="@color/verde_claro"
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:paddingTop="7dp"

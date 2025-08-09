@@ -1,6 +1,7 @@
 package com.example.gimasio_force
 
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -30,13 +31,18 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class LoginActivity : AppCompatActivity() {
 
     private var RESULT_CODE_GOOGLE_SIGN_IN = 100
     private val web_client = "1080953787276-3ssbhire6gubjd97knafs5jtavglpaub.apps.googleusercontent.com"
 
-    companion object{
+    companion object {
         lateinit var useremail: String
         lateinit var providerSession: String
     }
@@ -64,7 +70,7 @@ class LoginActivity : AppCompatActivity() {
 
         btnFacebook = findViewById(R.id.btnSingFacebook)
 
-       manageButtonLogin()
+        manageButtonLogin()
         etEmail.doOnTextChanged { text, start, before, count ->  manageButtonLogin() }
         etPassword.doOnTextChanged { text, start, before, count ->  manageButtonLogin() }
 
@@ -112,7 +118,7 @@ private fun manageButtonLogin(){
         tvLogin.isEnabled = false
     }
     else{
-        tvLogin.setBackgroundColor(ContextCompat.getColor(this, R.color.verde_claro))
+        tvLogin.setBackgroundColor(ContextCompat.getColor(this, R.color.azul_oscuro))
         tvLogin.isEnabled = true
     }
 }
@@ -121,8 +127,7 @@ private fun manageButtonLogin(){
         loginUser()
     }
 
-
-    private fun loginUser(){
+   /* private fun loginUser(){
         email = etEmail.text.toString()
         password = etPassword.text.toString()
 
@@ -137,8 +142,32 @@ private fun manageButtonLogin(){
                     }
                 }
             }
-    }
 
+    }*/
+
+    private fun loginUser() {
+        email = etEmail.text.toString()
+        password = etPassword.text.toString()
+
+        mAuth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val user = mAuth.currentUser
+                    if (user != null && user.isEmailVerified) {
+                        goHome(email, "email")
+                    } else {
+                        Toast.makeText(this, "Por favor verifica tu correo antes de iniciar sesión.", Toast.LENGTH_LONG).show()
+                        mAuth.signOut()
+                    }
+                } else {
+                    if (lyTerms.visibility == View.INVISIBLE) lyTerms.visibility = View.VISIBLE
+                    else {
+                        val cbAcept = findViewById<CheckBox>(R.id.cbAcept)
+                        if (cbAcept.isChecked) register()
+                    }
+                }
+            }
+    }
 
 
 
@@ -152,26 +181,46 @@ private fun manageButtonLogin(){
         startActivity(intent)
     }
 
-    private fun register(){
+
+    private fun register() {
         email = etEmail.text.toString()
         password = etPassword.text.toString()
 
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener {
-                if (it.isSuccessful){
+                if (it.isSuccessful) {
+                    val user = FirebaseAuth.getInstance().currentUser
+                    user?.sendEmailVerification()
+                        ?.addOnCompleteListener { verificationTask ->
+                            if (verificationTask.isSuccessful) {
+                                // Guardar en Firestore
+                                val dateRegister = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+                                val dbRegister = FirebaseFirestore.getInstance()
+                                dbRegister.collection("users").document(email).set(
+                                    hashMapOf(
+                                        "user" to email,
+                                        "dateRegister" to dateRegister
+                                    )
+                                )
 
-                    var dateRegister = SimpleDateFormat("dd/MM/yyyy").format(Date())
-                    var dbRegister = FirebaseFirestore.getInstance()
-                    dbRegister.collection("users").document(email).set(hashMapOf(
-                        "user" to email,
-                        "dateRegister" to dateRegister
-                    ))
+                                Toast.makeText(
+                                    this,
+                                    "Se ha enviado un correo de verificación a $email. Por favor revisa tu bandeja.",
+                                    Toast.LENGTH_LONG
+                                ).show()
 
-                    goHome(email, "email")
+                                FirebaseAuth.getInstance().signOut() // Cerrar sesión hasta que verifique
+                            } else {
+                                Toast.makeText(this, "Error al enviar verificación: ${verificationTask.exception?.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                } else {
+                    Toast.makeText(this, "Error al registrar: ${it.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
-                else Toast.makeText(this, "Error, algo ha ido mal :(", Toast.LENGTH_SHORT).show()
             }
     }
+
+
 
 
     fun goTerms(v: View) {
@@ -244,20 +293,32 @@ fun callSignInGoogle (view:View){
         else Toast.makeText(this, "Indica un email", Toast.LENGTH_SHORT).show()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        // Guardamos los valores de los campos
-        outState.putString("email", etEmail.text.toString())
-        outState.putString("password", etPassword.text.toString())
-        outState.putBoolean("termsVisible", lyTerms.visibility == View.VISIBLE)
+
+
+    private fun handleLoginError(e: Exception) {
+        when (e) {
+            is FirebaseAuthInvalidUserException -> {
+                if (lyTerms.visibility == View.INVISIBLE) {
+                    lyTerms.visibility = View.VISIBLE
+                } else {
+                    val cbAcept = findViewById<CheckBox>(R.id.cbAcept)
+                    if (cbAcept.isChecked) register()
+                }
+            }
+            is FirebaseAuthInvalidCredentialsException -> {
+                Toast.makeText(this, "Credenciales incorrectas", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        // Restauramos los valores de los campos
-        etEmail.setText(savedInstanceState.getString("email", ""))
-        etPassword.setText(savedInstanceState.getString("password", ""))
-        lyTerms.visibility = if (savedInstanceState.getBoolean("termsVisible")) View.VISIBLE else View.INVISIBLE
-    }
+
+
+
+
+
+
 
 
 

@@ -216,20 +216,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private var sportsLoaded: Int = 0
 
-    private var dateRun: String = ""
-    private var startTimeRun: String = ""
+    private var fechaCarrera: String = ""
+    private var inicioTiempoCarrera: String = ""
 
-    private lateinit var medalsListBikeDistance: ArrayList<Double>
-    private lateinit var medalsListBikeAvgSpeed: ArrayList<Double>
-    private lateinit var medalsListBikeMaxSpeed: ArrayList<Double>
+    private lateinit var medallaListaBicicletaDistancia: ArrayList<Double>
+    private lateinit var medallaListaBicicletaAvgSpeed: ArrayList<Double>
+    private lateinit var medallaListaMaxSpeed: ArrayList<Double>
 
-    private lateinit var medalsListRunningDistance: ArrayList<Double>
-    private lateinit var medalsListRunningAvgSpeed: ArrayList<Double>
-    private lateinit var medalsListRunningMaxSpeed: ArrayList<Double>
+    private lateinit var medallaListaCarreraDistancia: ArrayList<Double>
+    private lateinit var medallalistaCarreraAvgSpeed: ArrayList<Double>
+    private lateinit var medallaListaCarreraMaxSpeed: ArrayList<Double>
 
-    private lateinit var medalsListSportSelectedDistance: ArrayList<Double>
-    private lateinit var medalsListSportSelectedAvgSpeed: ArrayList<Double>
-    private lateinit var medalsListSportSelectedMaxSpeed: ArrayList<Double>
+    private lateinit var medallalistaDeporteSeleccionadoDistancia: ArrayList<Double>
+    private lateinit var medallalistaDeporteSeleccionadoAvgSpeed: ArrayList<Double>
+    private lateinit var medallaListaDeporteSeleccionadoMaxSpeed: ArrayList<Double>
 
     private var recDistanceGold: Boolean = false
     private var recDistanceSilver: Boolean = false
@@ -252,21 +252,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         tvRounds.text = getString(R.string.rounds)
 
         mainContext=this
-        // 1. Inicializar componentes básicos
-        initObjects()
+        // Inicializar componentes basicos
+        iniciarObjetos()
         initToolBar()
         initNavigationView()
         initPermissionsGPS()
 
-        // 2. Cargar preferencias
+        // Cargar preferencias del usuario
         initPreferences()
         recuperarPreferencias() // Aquí se establece deporteSeleccionado
 
-        // 3. Cargar datos de Firebase (incluye records)
+        //Cargar datos de Firebase
         cargarDesdeBD()
-
-       /* val toolbar: androidx.appcompat.widget.Toolbar= findViewById(R.id.toolbar_main)
-        setSupportActionBar(toolbar)*/
 
 
     }
@@ -274,13 +271,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun initStopWatch() {
         tvChrono.text = getString(R.string.init_stop_watch_value)
     }
-
-    private fun initChrono(){
+//funcion para iniciar el cronometro cuando se da click en iniciar
+    private fun iniciarCronometro(){
 
         tvChrono = findViewById(R.id.tvChrono)
         tvChrono.setTextColor(ContextCompat.getColor( this, R.color.white))
         initStopWatch()
-        //capturar el ancho y alto del layout para ir avanzando la barra de carrera y descanso
+
         widthScreenPixels = resources.displayMetrics.widthPixels
         heightScreenPixels = resources.displayMetrics.heightPixels
 
@@ -307,26 +304,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val lyIntervalMode = findViewById<LinearLayout>(R.id.lyIntervalMode)
         val lyChallengesSpace = findViewById<LinearLayout>(R.id.lyChallengesSpace)
         val lyChallenges = findViewById<LinearLayout>(R.id.lyChallenges)
-       /* val lySettingsVolumesSpace = findViewById<LinearLayout>(R.id.lySettingsVolumesSpace)
-        val lySettingsVolumes = findViewById<LinearLayout>(R.id.lySettingsVolumes)
-        var lySoftTrack = findViewById<LinearLayout>(R.id.lySoftTrack)
-        var lySoftVolume = findViewById<LinearLayout>(R.id.lySoftVolume)*/
+
 
 
         setHeightLinearLayout(lyMap, 0)
         setHeightLinearLayout(lyIntervalModeSpace,0)
         setHeightLinearLayout(lyChallengesSpace,0)
-       /* setHeightLinearLayout(lySettingsVolumesSpace,0)
-        setHeightLinearLayout(lySoftTrack,0)
-        setHeightLinearLayout(lySoftVolume,0)*/
+
 
         lyFragmentMap.translationY = -300f
         lyIntervalMode.translationY = -300f
         lyChallenges.translationY = -300f
-        //lySettingsVolumes.translationY = -300f
+
     }
     //controlar las metricas de los circulos bar
-    private fun initMetrics(){
+    private fun iniciarMetricas(){
         csbCurrentDistance = findViewById(R.id.csbCurrentDistance)
         csbChallengeDistance = findViewById(R.id.csbChallengeDistance)
         csbRecordDistance = findViewById(R.id.csbRecordDistance)
@@ -359,10 +351,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun initSwitchs(){
         swIntervalMode = findViewById(R.id.swIntervalMode)
         swChallenges = findViewById(R.id.swChallenges)
-      //  swVolumes = findViewById(R.id.swVolumes)
+
     }
     //inicializar los objetos del intervalo y duracoion
-    private fun initIntervalMode(){
+    private fun iniciarModoIntervalo(){
         npDurationInterval = findViewById(R.id.npDurationInterval)
         tvRunningTime = findViewById(R.id.tvRunningTime)
         tvWalkingTime = findViewById(R.id.tvWalkingTime)
@@ -430,7 +422,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     //inicializar los objetos de las horas, minutos y segundos
-    private fun initChallengeMode(){
+    private fun iniciarModoDesafio(){
         npChallengeDistance = findViewById(R.id.npChallengeDistance)
         npChallengeDurationHH = findViewById(R.id.npChallengeDurationHH)
         npChallengeDurationMM = findViewById(R.id.npChallengeDurationMM)
@@ -486,14 +478,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
-    private fun initObjects(){
-        initChrono()
+    private fun iniciarObjetos(){
+        iniciarCronometro()
         hideLayouts()
         initMedallas()
-        initMetrics()
+        iniciarMetricas()
         initSwitchs()
-        initIntervalMode()
-        initChallengeMode()
+        iniciarModoIntervalo()
+        iniciarModoDesafio()
         hidePopUpRun()
         initMap()
         initTotales()
@@ -506,27 +498,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun initMedallas() {
-        medalsListSportSelectedDistance = arrayListOf()
-        medalsListSportSelectedAvgSpeed = arrayListOf()
-        medalsListSportSelectedMaxSpeed = arrayListOf()
-        medalsListSportSelectedDistance.clear()
-        medalsListSportSelectedAvgSpeed.clear()
-        medalsListSportSelectedMaxSpeed.clear()
+        medallalistaDeporteSeleccionadoDistancia = arrayListOf()
+        medallalistaDeporteSeleccionadoAvgSpeed = arrayListOf()
+        medallaListaDeporteSeleccionadoMaxSpeed = arrayListOf()
+        medallalistaDeporteSeleccionadoDistancia.clear()
+        medallalistaDeporteSeleccionadoAvgSpeed.clear()
+        medallaListaDeporteSeleccionadoMaxSpeed.clear()
 
-        medalsListBikeDistance = arrayListOf()
-        medalsListBikeAvgSpeed = arrayListOf()
-        medalsListBikeMaxSpeed = arrayListOf()
-        medalsListBikeDistance.clear()
-        medalsListBikeAvgSpeed.clear()
-        medalsListBikeMaxSpeed.clear()
+        medallaListaBicicletaDistancia = arrayListOf()
+        medallaListaBicicletaAvgSpeed = arrayListOf()
+        medallaListaMaxSpeed = arrayListOf()
+        medallaListaBicicletaDistancia.clear()
+        medallaListaBicicletaAvgSpeed.clear()
+        medallaListaMaxSpeed.clear()
 
 
-        medalsListRunningDistance = arrayListOf()
-        medalsListRunningAvgSpeed = arrayListOf()
-        medalsListRunningMaxSpeed = arrayListOf()
-        medalsListRunningDistance.clear()
-        medalsListRunningAvgSpeed.clear()
-        medalsListRunningMaxSpeed.clear()
+        medallaListaCarreraDistancia = arrayListOf()
+        medallalistaCarreraAvgSpeed = arrayListOf()
+        medallaListaCarreraMaxSpeed = arrayListOf()
+        medallaListaCarreraDistancia.clear()
+        medallalistaCarreraAvgSpeed.clear()
+        medallaListaCarreraMaxSpeed.clear()
     }
 
     //iniciar los totales en 0 para el usuario que no tenga registros
@@ -578,11 +570,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun cargarMedallasUsuario() {
-        loadMedalsBike()
-        loadMedalsRunning()
+        cargarMedallasBicicleta()
+        cargarMedallasCarrera()
     }
 
-    private fun loadMedalsRunning(){
+    private fun cargarMedallasCarrera(){
         var dbRecords = FirebaseFirestore.getInstance()
         dbRecords.collection("carrerasCarrera")
             .orderBy("distancia", Query.Direction.DESCENDING)
@@ -590,10 +582,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .addOnSuccessListener { documents ->
                 for (document in documents){
                     if (document["usuario"] == useremail)
-                        medalsListRunningDistance.add (document["distancia"].toString().toDouble())
-                    if (medalsListRunningDistance.size == 3) break
+                        medallaListaCarreraDistancia.add (document["distancia"].toString().toDouble())
+                    if (medallaListaCarreraDistancia.size == 3) break
                 }
-                while (medalsListRunningDistance.size < 3) medalsListRunningDistance.add(0.0)
+                while (medallaListaCarreraDistancia.size < 3) medallaListaCarreraDistancia.add(0.0)
 
             }
             .addOnFailureListener { exception ->
@@ -606,10 +598,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .addOnSuccessListener { documents ->
                 for (document in documents) {
                     if (document["usuario"] == useremail)
-                        medalsListRunningAvgSpeed.add (document["avgSpeed"].toString().toDouble())
-                    if (medalsListRunningAvgSpeed.size == 3) break
+                        medallalistaCarreraAvgSpeed.add (document["avgSpeed"].toString().toDouble())
+                    if (medallalistaCarreraAvgSpeed.size == 3) break
                 }
-                while (medalsListRunningAvgSpeed.size < 3) medalsListRunningAvgSpeed.add(0.0)
+                while (medallalistaCarreraAvgSpeed.size < 3) medallalistaCarreraAvgSpeed.add(0.0)
 
             }
             .addOnFailureListener { exception ->
@@ -622,10 +614,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .addOnSuccessListener { documents ->
                 for (document in documents) {
                     if (document["usuario"] == useremail)
-                        medalsListRunningMaxSpeed.add (document["maxSpeed"].toString().toDouble())
-                    if (medalsListRunningMaxSpeed.size == 3) break
+                        medallaListaCarreraMaxSpeed.add (document["maxSpeed"].toString().toDouble())
+                    if (medallaListaCarreraMaxSpeed.size == 3) break
                 }
-                while (medalsListRunningMaxSpeed.size < 3) medalsListRunningMaxSpeed.add(0.0)
+                while (medallaListaCarreraMaxSpeed.size < 3) medallaListaCarreraMaxSpeed.add(0.0)
 
             }
             .addOnFailureListener { exception ->
@@ -633,7 +625,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
     }
 
-    private fun loadMedalsBike() {
+    private fun cargarMedallasBicicleta() {
         var dbRecords = FirebaseFirestore.getInstance()
         dbRecords.collection("carrerasBicicleta")
             .orderBy("distancia", Query.Direction.DESCENDING)
@@ -641,10 +633,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .addOnSuccessListener { documents ->
                 for (document in documents){
                     if (document["usuario"] == useremail)
-                        medalsListBikeDistance.add (document["distancia"].toString().toDouble())
-                    if (medalsListBikeDistance.size == 3) break
+                        medallaListaBicicletaDistancia.add (document["distancia"].toString().toDouble())
+                    if (medallaListaBicicletaDistancia.size == 3) break
                 }
-                while (medalsListBikeDistance.size < 3) medalsListBikeDistance.add(0.0)
+                while (medallaListaBicicletaDistancia.size < 3) medallaListaBicicletaDistancia.add(0.0)
 
             }
             .addOnFailureListener { exception ->
@@ -657,10 +649,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .addOnSuccessListener { documents ->
                 for (document in documents) {
                     if (document["usuario"] == useremail)
-                        medalsListBikeAvgSpeed.add (document["avgSpeed"].toString().toDouble())
-                    if (medalsListBikeAvgSpeed.size == 3) break
+                        medallaListaBicicletaAvgSpeed.add (document["avgSpeed"].toString().toDouble())
+                    if (medallaListaBicicletaAvgSpeed.size == 3) break
                 }
-                while (medalsListBikeAvgSpeed.size < 3) medalsListBikeAvgSpeed.add(0.0)
+                while (medallaListaBicicletaAvgSpeed.size < 3) medallaListaBicicletaAvgSpeed.add(0.0)
 
             }
             .addOnFailureListener { exception ->
@@ -673,10 +665,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .addOnSuccessListener { documents ->
                 for (document in documents) {
                     if (document["usuario"] == useremail)
-                        medalsListBikeMaxSpeed.add (document["maxSpeed"].toString().toDouble())
-                    if (medalsListBikeMaxSpeed.size == 3) break
+                        medallaListaMaxSpeed.add (document["maxSpeed"].toString().toDouble())
+                    if (medallaListaMaxSpeed.size == 3) break
                 }
-                while (medalsListBikeMaxSpeed.size < 3) medalsListBikeMaxSpeed.add(0.0)
+                while (medallaListaMaxSpeed.size < 3) medallaListaMaxSpeed.add(0.0)
 
             }
             .addOnFailureListener { exception ->
@@ -790,9 +782,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 "level_2" -> ivLevelBike.setImageResource(R.drawable.liebre)
                 "level_3" -> ivLevelBike.setImageResource(R.drawable.lobo)
                 "level_4" -> ivLevelBike.setImageResource(R.drawable.leopardo)
-               /* "level_5" -> ivLevelBike.setImageResource(R.drawable.level_5)
-                "level_6" -> ivLevelBike.setImageResource(R.drawable.level_6)
-                "level_7" -> ivLevelBike.setImageResource(R.drawable.level_7)*/
+
             }
             tvTotalRunsBike.text = "${totalesBicileta.totalCarreras}/${nivelBicicleta.objetivoCarreras}"
             var porcent = totalesBicileta.totalDistancia!!.toInt() * 100 / nivelBicicleta.objetivoDeDistancia!!.toInt()
@@ -818,7 +808,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     //establecer el nivel de carrera
     private fun setNivelCarrera(){
         var lyNavLevelRunning = findViewById<LinearLayout>(R.id.lyNavLevelRunning)
-        if (carrerasTotales.totalTiempo!! == 0) setHeightLinearLayout(lyNavLevelRunning, 0)
+        if (carrerasTotales.totalTiempo!! == 0) setHeightLinearLayout(lyNavLevelRunning, 0)//si el usuario es nuevo ocultamos el layout
         else{
 
             setHeightLinearLayout(lyNavLevelRunning, 300)
@@ -853,9 +843,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 "level_2" -> ivLevelRunning.setImageResource(R.drawable.liebre)
                 "level_3" -> ivLevelRunning.setImageResource(R.drawable.lobo)
                 "level_4" -> ivLevelRunning.setImageResource(R.drawable.leopardo)
-               /* "level_5" -> ivLevelRunning.setImageResource(R.drawable.level_5)
-                "level_6" -> ivLevelRunning.setImageResource(R.drawable.level_6)
-                "level_7" -> ivLevelRunning.setImageResource(R.drawable.level_7)*/
+
             }
 
             tvTotalRunsRunning.text = "${carrerasTotales.totalCarreras}/${nivelCorriendo.objetivoCarreras}"
@@ -920,12 +908,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     showChallenge("distance")
                 }
             }
-           /* cbNotify.isChecked = sharedPreferences.getBoolean(key_challengeNofify, true)
-            cbAutoFinish.isChecked = sharedPreferences.getBoolean(key_challengeAutofinish, false)
 
-            sbHardVolume.progress = sharedPreferences.getInt(key_hardVol, 100)
-            sbSoftVolume.progress = sharedPreferences.getInt(key_softVol, 100)
-            sbNotifyVolume.progress = sharedPreferences.getInt(key_notifyVol, 100)*/
 
         }else deporteSeleccionado = "Carrera"
 
@@ -961,9 +944,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             putBoolean(llave_notificacionesdesafio, cbNotify.isChecked)
             putBoolean(llave_autofinalizar, cbAutoFinish.isChecked)
-
-
-            //putInt(llave_notificacion, sbNotifyVolume.progress)
 
         }.apply()
     }
@@ -1015,36 +995,32 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
 
+    @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
-        super.onBackPressed()
-        if (lyPopupRun.isVisible) cerrarVentanaCorredor()
-        else{
-            if (drawer.isDrawerOpen(GravityCompat.START))
-                drawer.closeDrawer(GravityCompat.START)
-            else
-                if (timeInSeconds > 0L) resetClicked()
-            alertSignOut()
+        if (lyPopupRun.isVisible) {
+            cerrarVentanaCorredor()
+        } else if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START)
+        } else if (timeInSeconds > 0L) {
+            resetClicked()
+        } else {
+            alertSignOut() // Aquí puedes poner lógica para cerrar app
         }
 
-
     }
-    private fun alertSignOut(){
+
+    private fun alertSignOut() {
         AlertDialog.Builder(this)
-            .setTitle(getString(R.string.alertSignOutTitle))
-            .setMessage(R.string.alertSignOutTDescription)
-            .setPositiveButton(android.R.string.ok,
-                DialogInterface.OnClickListener { dialog, which ->
-                    //botón OK pulsado
-                    singOut()
-                })
-            .setNegativeButton(android.R.string.cancel,
-                DialogInterface.OnClickListener { dialog, which ->
-                    //botón cancel pulsado
-                })
-            .setCancelable(true)
+            .setTitle("Salir")
+            .setMessage("¿Deseas salir de la aplicación?")
+            .setPositiveButton("Sí") { _, _ ->
+                finishAffinity() // Cierra todas las actividades
+            }
+            .setNegativeButton("No", null)
             .show()
     }
-//obtener los valores proporcionados por el gps
+
+    //obtener los valores proporcionados por el gps
     private fun initPermissionsGPS(){
         if (allPermissionsGrantedGPS())
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -1080,15 +1056,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         tvUser.text= useremail
     }
 
-   /* private fun initToolBar() {
-        val toolbar: androidx.appcompat.widget.Toolbar= findViewById(R.id.toolbar_main)
-        setSupportActionBar(toolbar)
-
-        drawer= findViewById(R.id.drawer_layout)
-        val toogle = ActionBarDrawerToggle(this,drawer,toolbar,R.string.bar_title,R.string.navigation_drawer_close)
-        drawer.addDrawerListener(toogle)
-        toogle.syncState()
-    }*/
 
     private fun initToolBar() {
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar_main)
@@ -1109,6 +1076,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawer.addDrawerListener(toggle)
     }
 
+    //cerramos sesion
     private fun singOut() {
         FirebaseAuth.getInstance().signOut()
         startActivity(Intent(this, LoginActivity::class.java))
@@ -1192,8 +1160,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     fun inflateIntervalMode(v: View){
         val lyIntervalMode = findViewById<LinearLayout>(R.id.lyIntervalMode)
         val lyIntervalModeSpace = findViewById<LinearLayout>(R.id.lyIntervalModeSpace)
-      /*  var lySoftTrack = findViewById<LinearLayout>(R.id.lySoftTrack)
-        var lySoftVolume = findViewById<LinearLayout>(R.id.lySoftVolume)*/
+
         var tvRounds = findViewById<TextView>(R.id.tvRounds)
 
         if (swIntervalMode.isChecked){
@@ -1204,12 +1171,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             tvRounds.setText(R.string.rounds)
             animateViewofInt(tvRounds, "textColor", ContextCompat.getColor(this, R.color.white), 500)
 
-         /*   setHeightLinearLayout(lySoftTrack,120)
-            setHeightLinearLayout(lySoftVolume,200)
-            if (swVolumes.isChecked){
-                var lySettingsVolumesSpace = findViewById<LinearLayout>(R.id.lySettingsVolumesSpace)
-                setHeightLinearLayout(lySettingsVolumesSpace,600)
-            }*/
+
             var tvRunningTime = findViewById<TextView>(R.id.tvRunningTime)
             TIME_RUNNING = getSecFromWatch(tvRunningTime.text.toString())//capturamos los segundos de la propiedad text
         }
@@ -1219,12 +1181,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             lyIntervalMode.translationY = -200f
             animateViewofFloat (tvChrono, "translationX", 0f, 500)
             tvRounds.text = ""
-          /*  setHeightLinearLayout(lySoftTrack,0)
-            setHeightLinearLayout(lySoftVolume,0)
-            if (swVolumes.isChecked){
-                var lySettingsVolumesSpace = findViewById<LinearLayout>(R.id.lySettingsVolumesSpace)
-                setHeightLinearLayout(lySettingsVolumesSpace,400)
-            }*/
+
         }
     }
 
@@ -1233,15 +1190,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             try{
                 //verificar si se empieza a correr o si es nueva ronda
                 if (swIntervalMode.isChecked){
-                  //  checkStopRun(timeInSeconds)
-                  //  checkNewRound(timeInSeconds)
+
                 }
 
                 if (activatedGPS && timeInSeconds.toInt() % INTERVAL_LOCATION == 0) manageLocation()
 
                 timeInSeconds += 1
                 updateStopWatchView()
-              //  updateProgressBarRound(timeInSeconds)
+
             } finally {
                 mHandler!!.postDelayed(this,mInterval.toLong())//intervalo entre ejecuciones
             }
@@ -1312,11 +1268,11 @@ private fun registerNewLocation(location: Location){
 
     if (flagSavedLocation){
         if (timeInSeconds >= INTERVAL_LOCATION){
-            var distanceInterval = calculateDistance(new_latitude, new_longitude)
+            var distanceInterval = calcularDistancia(new_latitude, new_longitude)
             //verificar que la distancia no sea la que se acepta por defecto
             if ( distanceInterval <= LIMITE_DISTANCIA_ACEPTADA){
                 updateSpeeds(distanceInterval)
-                refreshInterfaceData()
+                refrescarDatosDeInterfaz()
 
 
 
@@ -1326,7 +1282,7 @@ private fun registerNewLocation(location: Location){
                 (listPoints as ArrayList<LatLng>).add(newPos)
                 crearPolilineas(listPoints)
 
-                checkMedals(distance, avgSpeed, maxSpeed)
+                verificarMedallas(distance, avgSpeed, maxSpeed)
 
 
 
@@ -1361,59 +1317,59 @@ private fun registerNewLocation(location: Location){
 
 }
 
-    private fun checkMedals(d: Double, aS: Double, mS: Double){
+    private fun verificarMedallas(d: Double, aS: Double, mS: Double){
         if (d>0){
-            if (d >= medalsListSportSelectedDistance.get(0)){
+            if (d >= medallalistaDeporteSeleccionadoDistancia.get(0)){
                 recDistanceGold = true; recDistanceSilver = false; recDistanceBronze = false
-                notifyMedal("distancia", "gold", "PERSONAL")
+                notificacionMedallas("distancia", "gold", "PERSONAL")
             }
             else{
-                if (d >= medalsListSportSelectedDistance.get(1)){
+                if (d >= medallalistaDeporteSeleccionadoDistancia.get(1)){
                     recDistanceGold = false; recDistanceSilver = true; recDistanceBronze = false
-                    notifyMedal("distancia", "silver", "PERSONAL")
+                    notificacionMedallas("distancia", "silver", "PERSONAL")
                 }
                 else{
-                    if (d >= medalsListSportSelectedDistance.get(2)){
+                    if (d >= medallalistaDeporteSeleccionadoDistancia.get(2)){
                         recDistanceGold = false; recDistanceSilver = false; recDistanceBronze = true
-                        notifyMedal("distancia", "bronze", "PERSONAL")
+                        notificacionMedallas("distancia", "bronze", "PERSONAL")
                     }
                 }
             }
         }
 
         if (aS > 0){
-            if (aS >= medalsListSportSelectedAvgSpeed.get(0)){
+            if (aS >= medallalistaDeporteSeleccionadoAvgSpeed.get(0)){
                 recAvgSpeedGold = true; recAvgSpeedSilver = false; recAvgSpeedBronze = false
-                notifyMedal("avgSpeed", "gold", "PERSONAL")
+                notificacionMedallas("avgSpeed", "gold", "PERSONAL")
             }
             else{
-                if (aS >= medalsListSportSelectedAvgSpeed.get(1)){
+                if (aS >= medallalistaDeporteSeleccionadoAvgSpeed.get(1)){
                     recAvgSpeedGold = false; recAvgSpeedSilver = true; recAvgSpeedBronze = false
-                    notifyMedal("avgSpeed", "silver", "PERSONAL")
+                    notificacionMedallas("avgSpeed", "silver", "PERSONAL")
                 }
                 else{
-                    if (aS >= medalsListSportSelectedAvgSpeed.get(2)){
+                    if (aS >= medallalistaDeporteSeleccionadoAvgSpeed.get(2)){
                         recAvgSpeedGold = false; recAvgSpeedSilver = false; recAvgSpeedBronze = true
-                        notifyMedal("avgSpeed", "bronze", "PERSONAL")
+                        notificacionMedallas("avgSpeed", "bronze", "PERSONAL")
                     }
                 }
             }
         }
 
         if (mS > 0){
-            if (mS >= medalsListSportSelectedMaxSpeed.get(0)){
+            if (mS >= medallaListaDeporteSeleccionadoMaxSpeed.get(0)){
                 recMaxSpeedGold = true; recMaxSpeedSilver = false; recMaxSpeedBronze = false
-                notifyMedal("maxSpeed", "gold", "PERSONAL")
+                notificacionMedallas("maxSpeed", "gold", "PERSONAL")
             }
             else{
-                if (mS >= medalsListSportSelectedMaxSpeed.get(1)){
+                if (mS >= medallaListaDeporteSeleccionadoMaxSpeed.get(1)){
                     recMaxSpeedGold = false; recMaxSpeedSilver = true; recMaxSpeedBronze = false
-                    notifyMedal("maxSpeed", "silver", "PERSONAL")
+                    notificacionMedallas("maxSpeed", "silver", "PERSONAL")
                 }
                 else{
-                    if (mS >= medalsListSportSelectedMaxSpeed.get(2)){
+                    if (mS >= medallaListaDeporteSeleccionadoMaxSpeed.get(2)){
                         recMaxSpeedGold = false; recMaxSpeedSilver = false; recMaxSpeedBronze = true
-                        notifyMedal("maxSpeed", "bronze", "PERSONAL")
+                        notificacionMedallas("maxSpeed", "bronze", "PERSONAL")
                     }
                 }
             }
@@ -1422,7 +1378,7 @@ private fun registerNewLocation(location: Location){
     }
 
     @SuppressLint("MissingPermission")
-    private fun notifyMedal(category: String, metal: String, scope: String){
+    private fun notificacionMedallas(category: String, metal: String, scope: String){
         var CHANNEL_ID = "NEW $scope RECORD - $deporteSeleccionado"
 
         var textNotification =""
@@ -1475,12 +1431,12 @@ private fun registerNewLocation(location: Location){
         }
 
         with(NotificationManagerCompat.from(this)) {
-            // notificationId is a unique int for each notification that you must define
+
             notify(notificationId, builder.build())
         }
 
     }
-    private fun resetMedals(){
+    private fun restablecerMedallas(){
         recDistanceGold = false
         recDistanceSilver = false
         recDistanceBronze = false
@@ -1494,7 +1450,7 @@ private fun registerNewLocation(location: Location){
     }
 //guardar ubicaciones del usuario durante la carrera
     private fun saveLocation(location: Location){
-        var dirName = dateRun + startTimeRun
+        var dirName = fechaCarrera + inicioTiempoCarrera
         dirName = dirName.replace("/", "")
         dirName = dirName.replace(":", "")
 
@@ -1523,7 +1479,7 @@ private fun registerNewLocation(location: Location){
     fun borrarCarrera(v:View){
 
 
-        var id:String = useremail + dateRun + startTimeRun
+        var id:String = useremail + fechaCarrera + inicioTiempoCarrera
         id = id.replace(":", "")
         id = id.replace("/", "")
 
@@ -1556,7 +1512,7 @@ private fun registerNewLocation(location: Location){
 
     }
 //funcion para calcular la distancia
-    private fun calculateDistance(n_lt: Double, n_lg: Double): Double{
+    private fun calcularDistancia(n_lt: Double, n_lg: Double): Double{
         val radioTierra = 6371.0 //en kilómetros
 
         val dLat = Math.toRadians(n_lt - latitude)
@@ -1586,7 +1542,7 @@ private fun registerNewLocation(location: Location){
         avgSpeed = ((distance * 1000) / timeInSeconds) * 3.6
     }
 //refrescar los datos de la interfaz
-    private fun refreshInterfaceData(){
+    private fun refrescarDatosDeInterfaz(){
         var tvCurrentDistance = findViewById<TextView>(R.id.tvCurrentDistance)
         var tvCurrentAvgSpeed = findViewById<TextView>(R.id.tvCurrentAvgSpeed)
         var tvCurrentSpeed = findViewById<TextView>(R.id.tvCurrentSpeed)
@@ -1650,7 +1606,7 @@ private fun registerNewLocation(location: Location){
         listPoints = arrayListOf()
         (listPoints as ArrayList<LatLng>).clear()
 
-        createMapFragment()
+        crearFragmentoMapa()
 
         var lyOpenerButton = findViewById<LinearLayout>(R.id.lyOpenerButton)
         if (allPermissionsGrantedGPS()) lyOpenerButton.isEnabled = true
@@ -1682,8 +1638,8 @@ private fun registerNewLocation(location: Location){
 
         if (timeInSeconds.toInt() == 0){
             //obtenemos la fecha del dispositivo
-            dateRun = SimpleDateFormat("yyyy/MM/dd").format(Date())
-            startTimeRun = SimpleDateFormat("HH:mm:ss").format(Date())
+            fechaCarrera = SimpleDateFormat("yyyy/MM/dd").format(Date())
+            inicioTiempoCarrera = SimpleDateFormat("HH:mm:ss").format(Date())
 
             fbCamara.isVisible = true
             //deshabilitamos los componentes de la interfaz mientras esta en la carrera
@@ -1769,13 +1725,13 @@ private fun registerNewLocation(location: Location){
         actualizarTotalesUsuario()
         establecerNivelDeporte(deporteSeleccionado)
         resetTimeView()
-        resetInterface()
+        restablecerInterfaz()
 
 
     }
 //enviamos la informacion del usuario a la base de datos y todos sus datos de la carrera
     private fun guardarDatosCarrera() {
-        var id:String = useremail + dateRun + startTimeRun
+        var id:String = useremail + fechaCarrera + inicioTiempoCarrera
         id = id.replace(":", "")
         id = id.replace("/", "")
 
@@ -1808,8 +1764,8 @@ private fun registerNewLocation(location: Location){
         var bdCarrera = FirebaseFirestore.getInstance()
         bdCarrera.collection(collection).document(id).set(hashMapOf(
             "usuario" to useremail,
-            "fecha" to dateRun,
-            "inicioTiempo" to startTimeRun,
+            "fecha" to fechaCarrera,
+            "inicioTiempo" to inicioTiempoCarrera,
             "deporte" to deporteSeleccionado,
             "activatedGPS" to activatedGPS,
             "duracion" to guardarDuracion,
@@ -1894,7 +1850,7 @@ private fun registerNewLocation(location: Location){
     }
 
     //reiniciar las variales del cronometro para que el usuario vuelva a iniciar la carrera
-    private fun resetVariablesRun(){
+    private fun restablecerVariablesCarrera(){
         timeInSeconds = 0
         rounds = 1
         activatedGPS=true
@@ -1923,12 +1879,10 @@ private fun registerNewLocation(location: Location){
         initStopWatch()
         manageEnableButtonsRun(false, true)
 
-        //val btStart: LinearLayout = findViewById(R.id.btStart)
-        //btStart.background = getDrawable(R.drawable.circle_background_toplay)
         tvChrono.setTextColor(ContextCompat.getColor(this, R.color.white))
     }
     //reiniciamos la interfaz para que vuelva a estar disponible todos los componentes progress bar, etc
-    private fun resetInterface(){
+    private fun restablecerInterfaz(){
 
         fbCamara.isVisible = false
 
@@ -1972,7 +1926,7 @@ private fun registerNewLocation(location: Location){
 
     }
     //cuando se inicia el fragment se crea el mapa
-    private fun createMapFragment(){
+    private fun crearFragmentoMapa(){
         val mapFragment = supportFragmentManager.findFragmentById(R.id.fragmentMap) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
     }
@@ -2066,9 +2020,9 @@ private fun registerNewLocation(location: Location){
                 nivelDeporteSeleccionado = nivelBicicleta
                 totalesDeporteSeleccionado = totalesBicileta
 
-                medalsListSportSelectedDistance = medalsListBikeDistance
-                medalsListSportSelectedAvgSpeed = medalsListBikeAvgSpeed
-                medalsListSportSelectedMaxSpeed = medalsListBikeMaxSpeed
+                medallalistaDeporteSeleccionadoDistancia = medallaListaBicicletaDistancia
+                medallalistaDeporteSeleccionadoAvgSpeed = medallaListaBicicletaAvgSpeed
+                medallaListaDeporteSeleccionadoMaxSpeed = medallaListaMaxSpeed
             }
 
             "Carrera" -> {
@@ -2080,9 +2034,9 @@ private fun registerNewLocation(location: Location){
                 nivelDeporteSeleccionado = nivelCorriendo
                 totalesDeporteSeleccionado = carrerasTotales
 
-                medalsListSportSelectedDistance = medalsListRunningDistance
-                medalsListSportSelectedAvgSpeed = medalsListRunningAvgSpeed
-                medalsListSportSelectedMaxSpeed = medalsListRunningMaxSpeed
+                medallalistaDeporteSeleccionadoDistancia = medallaListaCarreraDistancia
+                medallalistaDeporteSeleccionadoAvgSpeed = medallalistaCarreraAvgSpeed
+                medallaListaDeporteSeleccionadoMaxSpeed = medallaListaCarreraMaxSpeed
             }
         }
 
@@ -2184,11 +2138,11 @@ private fun registerNewLocation(location: Location){
     }
     //cargamos los datos de la ventana emergente
     private fun cargarDatosVentanaEmergente(){
-        showHeaderPopUp()
-        showMedals()
+        mostrarCabeceraVentanaEmergente()
+        mostrarMedallas()
         mostrarDatosCarrera()
     }
-    private fun showHeaderPopUp(){
+    private fun mostrarCabeceraVentanaEmergente(){
 
         var csbRunsLevel = findViewById<CircularSeekBar>(R.id.csbRunsLevel)
         var csbDistanceLevel = findViewById<CircularSeekBar>(R.id.csbDistanceLevel)
@@ -2257,7 +2211,7 @@ private fun registerNewLocation(location: Location){
         var formatedTime = getFormattedTotalTime(totalesDeporteSeleccionado.totalTiempo!!.toLong())
         tvTotalTime.text = getString(R.string.PopUpTotalTime) + formatedTime
     }
-    private fun showMedals(){
+    private fun mostrarMedallas(){
 
         val ivMedalDistance = findViewById<ImageView>(R.id.ivMedalDistance)
         val ivMedalAvgSpeed = findViewById<ImageView>(R.id.ivMedalAvgSpeed)
@@ -2292,8 +2246,8 @@ private fun registerNewLocation(location: Location){
         hidePopUpRun()
         var rlMain = findViewById<RelativeLayout>(R.id.rlMain)
         rlMain.isEnabled = true//habilitamos la ventana principal
-        resetVariablesRun()
-        resetMedals()
+        restablecerVariablesCarrera()
+        restablecerMedallas()
         seleccionarDeporte(deporteSeleccionado)
     }
 //registramos los datos de la carrera para mostrarlos
@@ -2361,8 +2315,8 @@ private fun registerNewLocation(location: Location){
     fun tomarFoto(v: View) {
         val intent = Intent(this, Camara::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            putExtra("dateRun", dateRun)
-            putExtra("startTimeRun", startTimeRun)
+            putExtra("dateRun", fechaCarrera)
+            putExtra("startTimeRun", inicioTiempoCarrera)
         }
         startActivity(intent)
     }

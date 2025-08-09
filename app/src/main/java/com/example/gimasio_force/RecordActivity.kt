@@ -11,8 +11,6 @@ import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gimasio_force.LoginActivity.Companion.useremail
@@ -22,7 +20,7 @@ import com.google.firebase.firestore.Query
 
 class RecordActivity : AppCompatActivity() {
 
-    private var sportSelected : String = "Carrera"
+    private var deporteSeleccionado : String = "Carrera"
 
     private lateinit var ivBike : ImageView
     private lateinit var ivRunning: ImageView
@@ -166,7 +164,7 @@ class RecordActivity : AppCompatActivity() {
     }
 
     fun loadRunsBike(v: View){
-        sportSelected = "Bicicleta"
+        deporteSeleccionado = "Bicicleta"
         ivBike.setBackgroundColor(ContextCompat.getColor(mainContext, R.color.verde_oscuro))
 
         ivRunning.setBackgroundColor(ContextCompat.getColor(mainContext, R.color.gray_medium))
@@ -175,7 +173,7 @@ class RecordActivity : AppCompatActivity() {
     }
 
     fun loadRunsRunning(v: View){
-        sportSelected = "Carrera"
+        deporteSeleccionado = "Carrera"
         ivBike.setBackgroundColor(ContextCompat.getColor(mainContext, R.color.gray_medium))
 
         ivRunning.setBackgroundColor(ContextCompat.getColor(mainContext, R.color.verde_oscuro))
@@ -187,7 +185,7 @@ class RecordActivity : AppCompatActivity() {
         runsArrayList.clear()
 
         var dbRuns = FirebaseFirestore.getInstance()
-        dbRuns.collection("carreras$sportSelected").orderBy(field, order)
+        dbRuns.collection("carreras$deporteSeleccionado").orderBy(field, order)
             .whereEqualTo("usuario", useremail)
             .get()
             .addOnSuccessListener { documents ->
