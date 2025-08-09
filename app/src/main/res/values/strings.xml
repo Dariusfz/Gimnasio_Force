@@ -108,6 +108,22 @@
 
 
     <string name="register">Registrarse</string>
+    <string name="distancia">Distancia</string>
+    <string name="velPromedio">vel. Promedio</string>
+    <string name="velocidad">Velocidad Max</string>
+    <string name="centrar">Centrar</string>
+    <string name="mapa">Mapa</string>
+    <string name="carreraIntervalos">Carrera con Intervalos</string>
+    <string name="duracionIntervalos">DURACIÓN DE LOS INTERVALOS</string>
+    <string name="correr">correr</string>
+    <string name="caminar">caminar</string>
+    <string name="marcarObjetivo">Marcar Objetivo</string>
+    <string name="duracion">DURACION</string>
+    <string name="distancias">DISTANCIA</string>
+    <string name="notificarObjetivo">Notificar Objetivo Alcanzado</string>
+    <string name="finCarrera">Fin de carrera automático</string>
+    <string name="carreras">CARRERAS</string>
+    <string name="eliminar">ELIMINAR</string>
 
 
 </resources>

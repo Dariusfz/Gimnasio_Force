@@ -198,7 +198,7 @@
                         android:textStyle="bold"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
-                        android:text="ELIMINAR"
+                        android:text="@string/eliminar"
                         android:fontFamily="sans-serif-light"
                         android:textSize="12sp"
                         android:textAlignment="center"

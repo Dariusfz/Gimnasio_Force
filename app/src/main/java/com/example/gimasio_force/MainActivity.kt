@@ -1014,7 +1014,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .setTitle("Salir")
             .setMessage("¿Deseas salir de la aplicación?")
             .setPositiveButton("Sí") { _, _ ->
-                finishAffinity() // Cierra todas las actividades
+                finishAffinity() // cerramos todas las actividades
             }
             .setNegativeButton("No", null)
             .show()

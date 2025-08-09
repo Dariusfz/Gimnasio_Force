@@ -1,0 +1,125 @@
+<resources>
+    <string name="app_name">Gym_Force</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="forgotPassword">Forgot your password?</string>
+    <string name="login">Log In</string>
+    <string name="resetPassword">Send Password</string>
+    <string name="invitation">How far are you willing to go?</string>
+    <string name="acept">I have read and accept the</string>
+    <string name="terms">terms and conditions of use.</string>
+
+    <string name="empty_email">Please enter an email</string>
+    <string name="bar_title">Gym Force</string>
+    <string name="invalid_email">Hmm, it seems the email is misspelled</string>
+    <string name="default_web_client_id">1080953787276-3ssbhire6gubjd97knafs5jtavglpaub.apps.googleusercontent.com</string>
+
+    <string name="google">GOOGLE</string>
+    <string name="facebook">FACEBOOK</string>
+
+    <string name="bar_title_terms">Terms and Conditions of Use</string>
+    <string name="terms1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent rhoncus convallis metus at pretium. Vivamus at lacinia leo. Praesent velit elit, suscipit sit amet pulvinar id, imperdiet ac massa. Quisque molestie lectus rhoncus urna tempor, ut lacinia mi tempor. Praesent volutpat, ligula eget lobortis cursus, mauris libero consequat ligula, nec scelerisque erat ipsum tempor justo. Aliquam ornare faucibus augue vel faucibus. Ut sollicitudin commodo tortor eu faucibus. Vestibulum lacinia ligula sed tortor auctor, vitae sollicitudin lorem dapibus. Phasellus sed tincidunt odio.</string>
+    <string name="terms2">Praesent arcu nisi, auctor quis tempor id, vehicula non nulla. Sed a fermentum tellus, quis pharetra lorem. Fusce vehicula libero in ultricies varius. Suspendisse vel velit tortor. Aliquam non nisi eget lectus tempor consectetur sed in magna. Nullam tincidunt, nibh ut sodales suscipit, ante est luctus purus, sed pellentesque ipsum massa et quam. Proin sed sapien ultrices ex aliquet elementum sed et erat. Sed tincidunt felis sapien, a suscipit massa cursus et. Phasellus auctor tellus ac neque maximus accumsan. Morbi sit amet odio nec sapien pharetra elementum maximus id odio. Integer laoreet, neque id efficitur auctor, magna massa consequat justo, quis vehicula ipsum massa at sem. Morbi in ornare sapien, in luctus mauris. </string>
+    <string name="terms3">Sed id libero auctor, lacinia lectus a, consequat nisl. Nam quis suscipit purus. Fusce at congue quam. Etiam congue imperdiet bibendum. Etiam at porttitor ipsum. Donec consectetur sapien in neque tempus tempus. Sed vulputate rutrum ultrices. Praesent in est leo. Suspendisse euismod purus id urna tempus pellentesque. Praesent condimentum nisl sit amet purus pulvinar sagittis. Cras purus felis, hendrerit et ornare ut, molestie id orci. Integer dictum consequat leo, id pretium urna tempus et. Donec nibh ante, laoreet id lorem vitae, vestibulum sollicitudin lorem. </string>
+
+    <string name="running">Run</string>
+    <string name="record">History</string>
+    <string name="menu_premium">Go Premium</string>
+    <string name="menu_limpiar">Reset Settings</string>
+    <string name="menu_salir">Log Out</string>
+    <string name="menu_cuenta">Account</string>
+    <string name="menu_anuncio">Ad</string>
+    <string name="menu_obtener_oferta">Enroll at UTH and get an offer</string>
+
+    <string name="nav_hi">Are you ready to give your best?</string>
+    <string name="user">darius.com</string>
+    <string name="level">Level</string>
+    <string name="navigation_drawer_open">Open</string>
+    <string name="navigation_drawer_close">Close</string>
+    <string name="bar_title_record">Records obtained</string>
+
+    <string name="orderby_dateZA">Date (Newest first)</string>
+    <string name="orderby_durationZA">Duration (Longest first)</string>
+    <string name="orderby_distanceZA">Distance (Longest first)</string>
+    <string name="orderby_avgspeedZA">Avg. Speed (Highest first)</string>
+    <string name="orderby_maxspeedZA">Max. Speed (Highest first)</string>
+
+    <string name="orderby_dateAZ">Date (Oldest first)</string>
+    <string name="orderby_durationAZ">Duration (Shortest first)</string>
+    <string name="orderby_distanceAZ">Distance (Shortest first)</string>
+    <string name="orderby_avgspeedAZ">Avg. Speed (Lowest first)</string>
+    <string name="orderby_maxspeedAZ">Max. Speed (Lowest first)</string>
+
+    <string name="start">START</string>
+    <string name="stop">STOP</string>
+    <string name="finish">Finish</string>
+    <string name="rounds">Round 1</string>
+    <string name="time_running">Running Time</string>
+    <string name="time_walking">Walking Time</string>
+    <string name="walking_clock">00:00</string>
+    <string name="init_stop_watch_value">00:00:00</string>
+
+    <string name="hard_volumen">Music Volume</string>
+    <string name="soft_volumen">Music Volume</string>
+    <string name="notification_volumen">Notification Volume</string>
+    <string name="hard_position">00:00:00</string>
+    <string name="hard_duration">01:00:00</string>
+    <string name="soft_position">00:00:00</string>
+    <string name="soft_duration">01:00:00</string>
+
+    <string name="PopUpTotalRuns">Runs: </string>
+    <string name="PopUpTotalDistance">Total Kms: </string>
+    <string name="PopUpTotalTime">Total Time: </string>
+    <string name="NoDataWarning">No data recorded. Remember to activate GPS if you want information about your run</string>
+
+    <string name="PopUpDurationTitle">DURATION</string>
+    <string name="PopUpChallengeTitle">GOAL</string>
+    <string name="PopUpIntervalTitle">INTERVALS</string>
+    <string name="PopUpDistanceTitle">DISTANCE</string>
+    <string name="PopUpAvgSpeedTitle">AVERAGE SPEED</string>
+    <string name="PopUpMaxSpeedTitle">MAX SPEED</string>
+    <string name="PopUpUnevennessTitle">ELEVATION</string>
+
+    <string name="textNull"></string>
+    <string name="textNoData">-</string>
+
+    <string name="medalDistanceDescription">Distance [Personal Record]</string>
+    <string name="medalAvgSpeedDescription">Max Speed [Personal Record]</string>
+    <string name="medalMaxSpeedDescription">Avg. Speed [Personal Record]</string>
+
+    <string name="alertActivationGPSTitle">Allow location access</string>
+    <string name="alertActivationGPSDescription">If you want to get data such as distance and speed, you must enable GPS</string>
+    <string name="ignoreActivationGPS">Ignore</string>
+    <string name="aceptActivationGPS">Activate</string>
+
+    <string name="alertClearPreferencesTitle">Do you want to clear your run preferences?</string>
+    <string name="alertClearPreferencesDescription">We will delete the run settings (mode and interval time) from your last run</string>
+
+    <string name="alertSignOutTitle">Do you want to log out?</string>
+    <string name="alertSignOutTDescription">You can come back anytime :)</string>
+
+    <string name="CardAvgSpeedTitle">AVG. SPEED</string>
+    <string name="CardMaxSpeedTitle">MAX SPEED</string>
+    <string name="CardMedalDistance">Kms. [PR]</string>
+    <string name="CardMedalAvgSpeed">Max S. [PR]</string>
+    <string name="CardMedalMaxSpeed">Avg S. [PR]</string>
+    <string name="terminos_condiciones">[Keep your translated legal text here if required]</string>
+
+    <string name="register">Register</string>
+    <string name="distancia">Distance</string>
+    <string name="velPromedio">Average Speed</string>
+    <string name="velocidad">Max Speed</string>
+    <string name="centrar">Center</string>
+    <string name="mapa">Map</string>
+    <string name="carreraIntervalos">Interval Run</string>
+    <string name="duracionIntervalos">INTERVAL DURATION</string>
+    <string name="correr">run</string>
+    <string name="caminar">walk</string>
+    <string name="marcarObjetivo">Set Goal</string>
+    <string name="duracion">DURATION</string>
+    <string name="distancias">DISTANCE</string>
+    <string name="notificarObjetivo">Notify Goal Reached</string>
+    <string name="finCarrera">Automatic End of Run</string>
+    <string name="carreras">RUNS</string>
+    <string name="eliminar">DELETE</string>
+</resources>

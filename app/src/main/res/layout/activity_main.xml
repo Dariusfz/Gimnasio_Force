@@ -123,7 +123,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="Distancia"
+                            android:text="@string/distancia"
                             android:textAlignment="center"
                             android:textColor="@color/gray_medium"
                             android:textSize="10sp"
@@ -219,7 +219,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="Vel. Promedio"
+                            android:text="@string/velPromedio"
                             android:textAlignment="center"
                             android:textColor="@color/gray_medium"
                             android:textSize="10sp"
@@ -335,7 +335,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="Velocidad"
+                            android:text="@string/velocidad"
                             android:textAlignment="center"
                             android:textColor="@color/gray_medium"
                             android:textSize="10sp"
@@ -497,7 +497,7 @@
                                 android:paddingTop="15dp"
                                 android:paddingRight="20dp"
                                 android:paddingBottom="10dp"
-                                android:text="CENTRAR"
+                                android:text="@string/centrar"
                                 android:textColor="@color/white"
                                 android:textSize="16sp"
                                 android:translationY="-57dp"
@@ -573,7 +573,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginLeft="5dp"
                                     android:gravity="center"
-                                    android:text="MAPA"
+                                    android:text="@string/mapa"
                                     android:textAlignment="center"
                                     android:textColor="@color/gray_dark"
                                     android:textSize="14sp" />
@@ -737,7 +737,7 @@
                             android:background="@color/gray_dark"
                             android:checked="false"
                             android:onClick="inflateIntervalMode"
-                            android:text="Carrera con Intervalos"
+                            android:text="@string/carreraIntervalos"
                             android:textColor="@color/white"
                             android:textColorHighlight="@color/verde_oscuro"
                             android:textSize="18dp"
@@ -776,7 +776,7 @@
                                         android:id="@+id/tvIntervalDuration"
                                         android:layout_width="150dp"
                                         android:layout_height="wrap_content"
-                                        android:text="DURACIÓN DE LOS INTERVALOS"
+                                        android:text="@string/duracionIntervalos"
                                         android:textColor="@color/white" />
 
                                     <LinearLayout
@@ -832,7 +832,7 @@
                                             android:id="@+id/tvRunningTimeUX"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:text="RUN"
+                                            android:text="@string/correr"
                                             android:textColor="@color/white"
                                             android:textSize="12dp" />
 
@@ -856,7 +856,7 @@
                                             android:id="@+id/tvWalkingTimeux"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:text="WALK"
+                                            android:text="@string/caminar"
                                             android:textColor="@color/white"
                                             android:textSize="12dp" />
                                     </LinearLayout>
@@ -930,7 +930,7 @@
                             android:checked="false"
                             android:onClick="inflateChallenges"
                             android:paddingTop="20dp"
-                            android:text="Marcar Objetivo"
+                            android:text="@string/marcarObjetivo"
                             android:textColor="@color/white"
                             android:textColorHighlight="@color/verde_oscuro"
                             android:textSize="18dp"
@@ -971,7 +971,7 @@
                                         android:background="@color/gray_dark"
                                         android:onClick="showDuration"
                                         android:paddingTop="5dp"
-                                        android:text="DURACIÓN"
+                                        android:text="@string/duracion"
                                         android:textAlignment="center"
                                         android:textColor="@color/verde_claro"
                                         android:textSize="18dp" />
@@ -983,7 +983,7 @@
                                         android:background="@color/gray_medium"
                                         android:onClick="showDistance"
                                         android:paddingTop="5dp"
-                                        android:text="DISTANCIA"
+                                        android:text="@string/distancias"
                                         android:textAlignment="center"
                                         android:textColor="@color/white"
                                         android:textSize="18dp" />
@@ -1132,7 +1132,7 @@
                                         android:buttonTint="@color/white"
                                         android:checked="true"
                                         android:drawableTint="@color/orange"
-                                        android:text="Notificar Objetivo Alcanzado"
+                                        android:text="@string/notificarObjetivo"
                                         android:textColor="@color/white"
                                         android:textSize="16dp" />
 
@@ -1144,7 +1144,7 @@
                                         android:buttonTint="@color/white"
                                         android:checked="false"
                                         android:drawableTint="@color/orange"
-                                        android:text="Fin de carrera automático"
+                                        android:text="@string/finCarrera"
                                         android:textColor="@color/white"
                                         android:textSize="16dp" />
                                 </LinearLayout>
@@ -1836,7 +1836,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="DISTANCE"
+                            android:text="@string/distancias"
                             android:textAlignment="center"
                             android:textColor="@color/gray_medium"
                             android:textSize="12sp"
@@ -1873,7 +1873,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="RUNS"
+                            android:text="@string/carreras"
                             android:textAlignment="center"
                             android:textColor="@color/gray_medium"
                             android:textSize="12sp"
@@ -1927,7 +1927,7 @@
                     android:paddingBottom="10dp"
                     android:paddingLeft="20dp"
                     android:paddingRight="20dp"
-                    android:text="ELIMINAR"
+                    android:text="@string/eliminar"
                     android:textColor="@color/gray_dark"
                     android:background="@color/white"
                     android:textSize="16sp"

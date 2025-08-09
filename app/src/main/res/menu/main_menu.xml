@@ -5,41 +5,41 @@
     <item
         android:id="@+id/action_run"
         android:icon="@drawable/icon_run"
-        android:title="Correr"
+        android:title="@string/correr"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/action_history"
-        android:title="Historial"
+        android:title="@string/record"
         android:icon="@drawable/menu_gallery"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/action_premium"
-        android:title="Hazte Premium"
+        android:title="@string/menu_premium"
         android:icon="@android:drawable/star_on"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/action_account"
-        android:title="Cuenta"
+        android:title="@string/menu_cuenta"
 
         app:showAsAction="never">
         <menu>
             <item
                 android:id="@+id/action_clear_prefs"
                 android:icon="@android:drawable/ic_popup_sync"
-                android:title="Borrar preferencias"/>
+                android:title="@string/menu_limpiar"/>
             <item
                 android:id="@+id/action_logout"
                 android:icon="@drawable/cerrarsesion"
-                android:title="Cerrar sesión"/>
+                android:title="@string/menu_salir"/>
         </menu>
     </item>
 
     <item
         android:id="@+id/action_ad"
-        android:title="Anuncio"
+        android:title="@string/menu_anuncio"
         app:showAsAction="never">
         <menu>
             <item
