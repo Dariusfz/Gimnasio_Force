@@ -1188,21 +1188,68 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var chronometer: Runnable = object : Runnable {
         override fun run() {
             try{
-                //verificar si se empieza a correr o si es nueva ronda
                 if (swIntervalMode.isChecked){
-
+                    checkStopRun(timeInSeconds)
+                    checkNewRound(timeInSeconds)
                 }
-
-                if (activatedGPS && timeInSeconds.toInt() % INTERVAL_LOCATION == 0) manageLocation()
 
                 timeInSeconds += 1
                 updateStopWatchView()
-
             } finally {
-                mHandler!!.postDelayed(this,mInterval.toLong())//intervalo entre ejecuciones
+                mHandler!!.postDelayed(this, mInterval.toLong())
             }
         }
     }
+
+    private fun updateProgressBarRound(secs: Long){
+        var s = secs.toInt()
+        while (s>=ROUND_INTERVAL) s-=ROUND_INTERVAL
+        s++
+
+        var lyRoundProgressBg = findViewById<LinearLayout>(R.id.lyRoundProgressBg)
+        if (tvChrono.getCurrentTextColor() == ContextCompat.getColor(this, R.color.chrono_running)){
+
+            var movement = -1 * (widthAnimations-(s*widthAnimations/TIME_RUNNING)).toFloat()
+            animateViewofFloat(lyRoundProgressBg, "translationX", movement, 1000L)
+        }
+        if (tvChrono.getCurrentTextColor() == ContextCompat.getColor(this, R.color.chrono_walking)){
+            s-= TIME_RUNNING
+            var movement = -1 * (widthAnimations-(s*widthAnimations/(ROUND_INTERVAL-TIME_RUNNING))).toFloat()
+            animateViewofFloat(lyRoundProgressBg, "translationX", movement, 1000L)
+
+        }
+    }
+
+    private fun checkStopRun(Secs: Long){
+        var secAux : Long = Secs
+        while (secAux.toInt() > ROUND_INTERVAL) secAux -= ROUND_INTERVAL
+
+        if (secAux.toInt() == TIME_RUNNING){
+            tvChrono.setTextColor(ContextCompat.getColor(this, R.color.chrono_walking))
+
+            val lyRoundProgressBg = findViewById<LinearLayout>(R.id.lyRoundProgressBg)
+            lyRoundProgressBg.setBackgroundColor(ContextCompat.getColor(this, R.color.chrono_walking))
+            lyRoundProgressBg.translationX = -widthAnimations.toFloat()
+        }
+        else updateProgressBarRound(Secs)
+    }
+    private fun checkNewRound(Secs: Long){
+        if (Secs.toInt() % ROUND_INTERVAL == 0 && Secs.toInt() > 0){
+            val tvRounds: TextView = findViewById(R.id.tvRounds) as TextView
+            rounds++
+            tvRounds.text = "Round $rounds"
+
+            tvChrono.setTextColor(ContextCompat.getColor( this, R.color.chrono_running))
+            val lyRoundProgressBg = findViewById<LinearLayout>(R.id.lyRoundProgressBg)
+            lyRoundProgressBg.setBackgroundColor(ContextCompat.getColor(this, R.color.chrono_running))
+            lyRoundProgressBg.translationX = -widthAnimations.toFloat()
+
+        }
+        else updateProgressBarRound(Secs)
+    }
+
+
+
     fun startOrStopButtonClicked (v: View){
        manageStartStop()
     }
@@ -1683,7 +1730,7 @@ private fun registerNewLocation(location: Location){
         btStart.setEnabled(e_run)
 
         if (e_reset){
-            tvReset.setBackgroundColor(ContextCompat.getColor(this, R.color.green))//mostramos el fondo verde para finalizar
+            tvReset.setBackgroundColor(ContextCompat.getColor(this, R.color.azul_oscuro))//mostramos el fondo azul para finalizar
             animateViewofFloat(tvReset, "translationY", 0f, 500)
         }
         else{
