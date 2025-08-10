@@ -40,7 +40,6 @@ import kotlinx.coroutines.withContext
 class LoginActivity : AppCompatActivity() {
 
     private var RESULT_CODE_GOOGLE_SIGN_IN = 100
-    private val web_client = "1080953787276-3ssbhire6gubjd97knafs5jtavglpaub.apps.googleusercontent.com"
 
     companion object {
         lateinit var useremail: String
@@ -90,8 +89,6 @@ class LoginActivity : AppCompatActivity() {
     private fun mensajeFacebook(){
         Toast.makeText(this,"Lo Sentimos, modulo no disponible, intente con otro método :)", Toast.LENGTH_SHORT).show()
     }
-    //verifica si hay un usuario logeado para iniciar sesion directamente
-
 
 
 //controlar que al presionar el boton de atras vaya a la pantalla de inicio
@@ -103,8 +100,6 @@ class LoginActivity : AppCompatActivity() {
         startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(startMain)
     }
-
-
 
 //verifcar si los campos son correctos para iniciar sesion
 private fun manageButtonLogin(){
@@ -126,24 +121,6 @@ private fun manageButtonLogin(){
     fun login(view: View) {
         loginUser()
     }
-
-   /* private fun loginUser(){
-        email = etEmail.text.toString()
-        password = etPassword.text.toString()
-
-        mAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this){ task ->
-                if (task.isSuccessful)  goHome(email, "email")
-                else{
-                    if (lyTerms.visibility == View.INVISIBLE) lyTerms.visibility = View.VISIBLE
-                    else{
-                        var cbAcept = findViewById<CheckBox>(R.id.cbAcept)
-                        if (cbAcept.isChecked) register()
-                    }
-                }
-            }
-
-    }*/
 
     private fun loginUser() {
         email = etEmail.text.toString()
@@ -169,9 +146,6 @@ private fun manageButtonLogin(){
             }
     }
 
-
-
-
     private fun goHome(email: String, provider: String){
 
         useremail = email
@@ -180,7 +154,6 @@ private fun manageButtonLogin(){
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
     }
-
 
     private fun register() {
         email = etEmail.text.toString()
@@ -219,8 +192,6 @@ private fun manageButtonLogin(){
                 }
             }
     }
-
-
 
 
     fun goTerms(v: View) {
@@ -292,34 +263,5 @@ fun callSignInGoogle (view:View){
         }
         else Toast.makeText(this, "Indica un email", Toast.LENGTH_SHORT).show()
     }
-
-
-
-    private fun handleLoginError(e: Exception) {
-        when (e) {
-            is FirebaseAuthInvalidUserException -> {
-                if (lyTerms.visibility == View.INVISIBLE) {
-                    lyTerms.visibility = View.VISIBLE
-                } else {
-                    val cbAcept = findViewById<CheckBox>(R.id.cbAcept)
-                    if (cbAcept.isChecked) register()
-                }
-            }
-            is FirebaseAuthInvalidCredentialsException -> {
-                Toast.makeText(this, "Credenciales incorrectas", Toast.LENGTH_SHORT).show()
-            }
-            else -> {
-                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-
-
-
-
-
-
-
 
 }

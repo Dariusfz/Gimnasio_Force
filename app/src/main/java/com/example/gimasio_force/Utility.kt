@@ -7,16 +7,16 @@ import android.graphics.Color
 import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
+import androidx.appcompat.app.AlertDialog
 import com.example.gimasio_force.LoginActivity.Companion.useremail
 import com.example.gimasio_force.MainActivity.Companion.activatedGPS
-import com.example.gimasio_force.MainActivity.Companion.carrerasTotales
+import com.example.gimasio_force.MainActivity.Companion.totalesCarrera
 import com.example.gimasio_force.MainActivity.Companion.countFotos
-import com.example.gimasio_force.MainActivity.Companion.totalesBicileta
+import com.example.gimasio_force.MainActivity.Companion.totalesBicicleta
 import com.example.gimasio_force.MainActivity.Companion.totalesDeporteSeleccionado
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.StorageReference
@@ -28,13 +28,13 @@ object Utility {
 
     private var totalsChecked: Int =0
 //formateo de dia, mes y anio en segundos
-    fun getFormattedTotalTime(secs: Long): String {
+    fun obtenerTiempoTotalFormateado(secs: Long): String {
         var seconds: Long = secs
         var total: String =""
 
-        //1 dia = 86400s
-        //1 mes (30 dias) = 2592000s
-        //365 dias = 31536000s
+        //1 dia = 86,400s
+        //1 mes (30 dias) = 2,592,000s
+        //365 dias = 31,536,000s
 
         var years: Int = 0
         while (seconds >=  31536000) { years++; seconds-=31536000; }
@@ -55,10 +55,10 @@ object Utility {
     }
 
     //funcion para formatear las horas, minutos y segundos
-fun getSecFromWatch (watch: String): Int{
+fun obtenerSegDelReloj (reloj: String): Int{
 
     var secs = 0
-    var w: String = watch
+    var w: String = reloj
     if (w.length == 5) w= "00:" + w
 
     // 00:00:00
@@ -69,8 +69,8 @@ fun getSecFromWatch (watch: String): Int{
     return secs
 }
 
-/* FUNCIONES DE ANIMACION Y CAMBIOS DE ATRIBUTOS */
-fun setHeightLinearLayout(ly: LinearLayout, value: Int){
+// FUNCIONES DE ANIMACION Y CAMBIOS DE ATRIBUTOS
+fun establecerAlturaLinearLayout(ly: LinearLayout, value: Int){
     val params: LinearLayout.LayoutParams = ly.layoutParams as LinearLayout.LayoutParams //casteo de linearlayout
     params.height = value
     ly.layoutParams = params
@@ -118,17 +118,17 @@ fun animateViewofFloat(v: View, attr: String, value: Float, time: Long){
     /* FUNCIONES DE BORRADO DE CARRERA */
     fun deleteRunAndLinkedData(idRun: String, sport: String, ly: LinearLayout, cr: Carreras){
 
-        if (activatedGPS) deleteLocations(idRun, useremail)
+        if (activatedGPS) borrarUbicaciones(idRun, useremail)
         //si habia fotos, borramos todas las fotos
-        if(countFotos>0) deletePicturesRun(idRun)
+        if(countFotos>0) borrarFotosDeCarrera(idRun)
 
 
-        updateTotals(cr)
+        actualizarTotales(cr)
         checkRecords(cr, sport, useremail)
-        deleteRun(idRun, sport, ly)
+        borrarCarrera(idRun, sport, ly)
     }
 
-    private fun deleteLocations(idRun: String, user: String){
+    private fun borrarUbicaciones(idRun: String, user: String){
         var idLocations = idRun.subSequence(user.length, idRun.length).toString()
 
         var dbLocations = FirebaseFirestore.getInstance()
@@ -148,7 +148,7 @@ fun animateViewofFloat(v: View, attr: String, value: Float, time: Long){
             }
     }
 
-    private fun deletePicturesRun(idRun: String) {
+    private fun borrarFotosDeCarrera(idRun: String) {
         var idFolder = idRun.subSequence(useremail.length, idRun.length).toString()
         // val delRef = FirebaseStorage.getInstance().getReference("images/$useremail/$idFolder")
         var delRef: StorageReference
@@ -170,20 +170,20 @@ fun animateViewofFloat(v: View, attr: String, value: Float, time: Long){
             }
     }
 
-    private fun updateTotals(cr: Carreras){
+    private fun actualizarTotales(cr: Carreras){
         totalesDeporteSeleccionado.totalDistancia = totalesDeporteSeleccionado.totalDistancia!! - cr.distancia!!
         totalesDeporteSeleccionado.totalCarreras = totalesDeporteSeleccionado.totalCarreras!! - 1
-        totalesDeporteSeleccionado.totalTiempo = totalesDeporteSeleccionado.totalTiempo!! - getSecFromWatch(cr.duracion!!)
+        totalesDeporteSeleccionado.totalTiempo = totalesDeporteSeleccionado.totalTiempo!! - obtenerSegDelReloj(cr.duracion!!)
     }
     private fun checkRecords(cr: Carreras, sport: String, user: String){
 
         totalsChecked = 0
 
-        checkDistanceRecord(cr, sport, user)
-        checkAvgSpeedRecord(cr, sport, user)
-        checkMaxSpeedRecord(cr, sport, user)
+        verificarRecordDeDistancia(cr, sport, user)
+        verificarAvgRecord(cr, sport, user)
+        verificarRecordMaxVelocidad(cr, sport, user)
     }
-    private fun checkDistanceRecord(cr: Carreras, sport: String, user: String){
+    private fun verificarRecordDeDistancia(cr: Carreras, sport: String, user: String){
         if (cr.distancia!! == totalesDeporteSeleccionado.recordDistancia){
             var dbRecords = FirebaseFirestore.getInstance()
             dbRecords.collection("carreras$sport")
@@ -201,7 +201,7 @@ fun animateViewofFloat(v: View, attr: String, value: Float, time: Long){
                         .update("recordDistancia", totalesDeporteSeleccionado.recordDistancia)
 
                     totalsChecked++
-                    if (totalsChecked == 3) refreshTotalsSport(sport)
+                    if (totalsChecked == 3) refrescarTotalesDeporte(sport)
 
                 }
                 .addOnFailureListener { exception ->
@@ -209,7 +209,7 @@ fun animateViewofFloat(v: View, attr: String, value: Float, time: Long){
                 }
         }
     }
-    private fun checkAvgSpeedRecord(cr: Carreras, sport: String, user: String){
+    private fun verificarAvgRecord(cr: Carreras, sport: String, user: String){
         if (cr.avgSpeed!! == totalesDeporteSeleccionado.recordVelocidadPromedio){
             var dbRecords = FirebaseFirestore.getInstance()
             dbRecords.collection("carreras$sport")
@@ -227,7 +227,7 @@ fun animateViewofFloat(v: View, attr: String, value: Float, time: Long){
                         .update("recordVelocidadPromedio", totalesDeporteSeleccionado.recordVelocidadPromedio)
 
                     totalsChecked++
-                    if (totalsChecked == 3) refreshTotalsSport(sport)
+                    if (totalsChecked == 3) refrescarTotalesDeporte(sport)
 
                 }
                 .addOnFailureListener { exception ->
@@ -235,7 +235,7 @@ fun animateViewofFloat(v: View, attr: String, value: Float, time: Long){
                 }
         }
     }
-    private fun checkMaxSpeedRecord(cr: Carreras, sport: String, user: String){
+    private fun verificarRecordMaxVelocidad(cr: Carreras, sport: String, user: String){
         if (cr.maxSpeed!! == totalesDeporteSeleccionado.recordVelocidad){
             var dbRecords = FirebaseFirestore.getInstance()
             dbRecords.collection("carreras$sport")
@@ -253,7 +253,7 @@ fun animateViewofFloat(v: View, attr: String, value: Float, time: Long){
                         .update("recordVelocidad", totalesDeporteSeleccionado.recordVelocidad)
 
                     totalsChecked++
-                    if (totalsChecked == 3) refreshTotalsSport(sport)
+                    if (totalsChecked == 3) refrescarTotalesDeporte(sport)
 
                 }
                 .addOnFailureListener { exception ->
@@ -261,27 +261,40 @@ fun animateViewofFloat(v: View, attr: String, value: Float, time: Long){
                 }
         }
     }
-    private fun refreshTotalsSport(sport: String){
+    private fun refrescarTotalesDeporte(sport: String){
         when (sport){
-            "Bicicleta"-> totalesBicileta = totalesDeporteSeleccionado
-            "Carrera"-> carrerasTotales = totalesDeporteSeleccionado
+            "Bicicleta"-> totalesBicicleta = totalesDeporteSeleccionado
+            "Carrera"-> totalesCarrera = totalesDeporteSeleccionado
         }
 
     }
 
-    private fun deleteRun(idRun: String, sport: String, ly: LinearLayout){
-        var dbRun = FirebaseFirestore.getInstance()
-        dbRun.collection("carreras$sport").document(idRun)
-            .delete()
-            .addOnSuccessListener {
-                Snackbar.make(ly, "Registro Borrado", Snackbar.LENGTH_LONG).setAction("OK"){
-                    ly.setBackgroundColor(Color.CYAN)
-                }.show()
-            }
-            .addOnFailureListener {
-                Snackbar.make(ly, "Error al borrar el registro", Snackbar.LENGTH_LONG).setAction("OK"){
-                    ly.setBackgroundColor(Color.CYAN)
-                }.show()
-            }
+    private fun borrarCarrera(idRun: String, sport: String, ly: LinearLayout) {
+        val builder = AlertDialog.Builder(MainActivity.mainContext) // 'this' es el contexto (Activity)
+
+        builder.setTitle("Confirmar eliminación")
+        builder.setMessage("¿Estás seguro de que quieres eliminar esta carrera? Esta acción no se puede deshacer.")
+
+        builder.setPositiveButton("Sí") { _, _ ->
+            // Aquí se borra la carrera si confirma
+            val dbRun = FirebaseFirestore.getInstance()
+            dbRun.collection("carreras$sport").document(idRun)
+                .delete()
+                .addOnSuccessListener {
+                    Snackbar.make(ly, "Registro Borrado", Snackbar.LENGTH_LONG).setAction("OK") {
+                        ly.setBackgroundColor(Color.CYAN)
+                    }.show()
+                }
+                .addOnFailureListener {
+                    Snackbar.make(ly, "Error al borrar el registro", Snackbar.LENGTH_LONG).setAction("OK") {
+                        ly.setBackgroundColor(Color.CYAN)
+                    }.show()
+                }
+        }
+
+        builder.setNegativeButton("No",null)
+
+        builder.show()
     }
+
 }

@@ -2,7 +2,6 @@ package com.example.gimasio_force
 
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
@@ -13,10 +12,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gimasio_force.LoginActivity.Companion.useremail
-import com.example.gimasio_force.MainActivity.Companion.ultimaFoto
 import com.example.gimasio_force.Utility.animateViewofFloat
 import com.example.gimasio_force.Utility.deleteRunAndLinkedData
-import com.example.gimasio_force.Utility.setHeightLinearLayout
+import com.example.gimasio_force.Utility.establecerAlturaLinearLayout
 import com.google.android.gms.tasks.Task
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
@@ -39,19 +37,19 @@ class RunsAdapter(private val runsList: ArrayList<Carreras>) :RecyclerView.Adapt
 
         val run: Carreras = runsList[position]
 
-        setHeightLinearLayout(holder.lyDataRunBody, 0)
+        establecerAlturaLinearLayout(holder.lyDataRunBody, 0)
         holder.lyDataRunBodyContainer.translationY = -200f
 
         holder.ivHeaderOpenClose.setOnClickListener{
             if (minimized){
-                setHeightLinearLayout(holder.lyDataRunBody, 600)
+                establecerAlturaLinearLayout(holder.lyDataRunBody, 600)
                 animateViewofFloat(holder.lyDataRunBodyContainer, "translationY", 0f, 300L)
                 holder.ivHeaderOpenClose.setRotation(180f)
                 minimized = false
             }
             else{
                 holder.lyDataRunBodyContainer.translationY = -200f
-                setHeightLinearLayout(holder.lyDataRunBody, 0)
+                establecerAlturaLinearLayout(holder.lyDataRunBody, 0)
                 holder.ivHeaderOpenClose.setRotation(0f)
                 minimized = true
             }
@@ -88,12 +86,12 @@ class RunsAdapter(private val runsList: ArrayList<Carreras>) :RecyclerView.Adapt
         if (!run.challengeDuration.isNullOrEmpty())
             holder.tvChallengeDurationRun.text = run.challengeDuration
         else
-            setHeightLinearLayout(holder.lyChallengeDurationRun, 0)
+            establecerAlturaLinearLayout(holder.lyChallengeDurationRun, 0)
 
         if (run.challengeDistance != null)
             holder.tvChallengeDistanceRun.text = run.challengeDistance.toString()
         else
-            setHeightLinearLayout(holder.lyChallengeDistance, 0)
+            establecerAlturaLinearLayout(holder.lyChallengeDistance, 0)
 
 
         if (run.intervalMode != null){
@@ -102,7 +100,7 @@ class RunsAdapter(private val runsList: ArrayList<Carreras>) :RecyclerView.Adapt
             holder.tvIntervalRun.text = details
         }
         else
-            setHeightLinearLayout(holder.lyIntervalRun, 0)
+            establecerAlturaLinearLayout(holder.lyIntervalRun, 0)
 
         holder.tvDistanceRun.setText(run.distancia.toString())
         holder.tvHeaderDistance.setText(run.distancia.toString() + "KM")
@@ -187,14 +185,14 @@ class RunsAdapter(private val runsList: ArrayList<Carreras>) :RecyclerView.Adapt
 
                             var porcent = 100/bitmap.width.toFloat()
 
-                            setHeightLinearLayout(holder.lyPicture, (bitmap.width * porcent).toInt())
+                            establecerAlturaLinearLayout(holder.lyPicture, (bitmap.width * porcent).toInt())
                             holder.ivPicture.setImageBitmap(bitmap)
 
                         }
                         else{
                             var porcent = 100/bitmap.height.toFloat()
 
-                            setHeightLinearLayout(holder.lyPicture, (bitmap.width * porcent).toInt())
+                            establecerAlturaLinearLayout(holder.lyPicture, (bitmap.width * porcent).toInt())
                             holder.ivPicture.setImageBitmap(bitmap)
                             holder.ivPicture.setRotation(90f)
                         }

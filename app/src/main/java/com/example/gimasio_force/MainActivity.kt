@@ -19,7 +19,6 @@ import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.CheckBox
@@ -68,10 +67,10 @@ import com.example.gimasio_force.Utility.animateViewofFloat
 import com.example.gimasio_force.Utility.animateViewofInt
 import com.example.gimasio_force.Utility.deleteRunAndLinkedData
 import com.example.gimasio_force.Utility.getFormattedStopWatch
-import com.example.gimasio_force.Utility.getFormattedTotalTime
-import com.example.gimasio_force.Utility.getSecFromWatch
+import com.example.gimasio_force.Utility.obtenerTiempoTotalFormateado
+import com.example.gimasio_force.Utility.obtenerSegDelReloj
 import com.example.gimasio_force.Utility.roundNumber
-import com.example.gimasio_force.Utility.setHeightLinearLayout
+import com.example.gimasio_force.Utility.establecerAlturaLinearLayout
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
@@ -102,8 +101,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
          var activatedGPS: Boolean = true
 
         lateinit var totalesDeporteSeleccionado: Totales
-        lateinit var totalesBicileta: Totales
-        lateinit var carrerasTotales: Totales
+        lateinit var totalesBicicleta: Totales
+        lateinit var totalesCarrera: Totales
 
 
         val REQUIRED_PERMISSIONS_GPS =
@@ -121,7 +120,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private var mHandler: Handler? = null
     private var mInterval = 1000
-    private var timeInSeconds = 0L
+    private var tiempoEnSegundos = 0L
     private var rounds: Int = 1 //rondas
     private var startButtonClicked = false //saber si se pulso el boton de iniciar carrera
 
@@ -175,7 +174,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var ROUND_INTERVAL = 300 //controlar los intervalos por defecto 5 minutos
     private var TIME_RUNNING: Int = 0
 
-    private lateinit var lyPopupRun: LinearLayout
+    private lateinit var lyVentanaEmergente: LinearLayout
 
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -252,6 +251,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         tvRounds.text = getString(R.string.rounds)
 
         mainContext=this
+
+        val navigationView: NavigationView = findViewById(R.id.nav_view)
+        navigationView.setNavigationItemSelectedListener(this)
+
         // Inicializar componentes basicos
         iniciarObjetos()
         initToolBar()
@@ -268,7 +271,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
-    private fun initStopWatch() {
+    private fun iniciarVistaReloj() {
         tvChrono.text = getString(R.string.init_stop_watch_value)
     }
 //funcion para iniciar el cronometro cuando se da click en iniciar
@@ -276,14 +279,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         tvChrono = findViewById(R.id.tvChrono)
         tvChrono.setTextColor(ContextCompat.getColor( this, R.color.white))
-        initStopWatch()
+        iniciarVistaReloj()
 
         widthScreenPixels = resources.displayMetrics.widthPixels
         heightScreenPixels = resources.displayMetrics.heightPixels
 
         widthAnimations = widthScreenPixels
-        Log.d("ProgressBar", "Width animations: $widthAnimations")
-
 
         val lyChronoProgressBg = findViewById<LinearLayout>(R.id.lyChronoProgressBg)
         val lyRoundProgressBg = findViewById<LinearLayout>(R.id.lyRoundProgressBg)
@@ -297,7 +298,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         fbCamara.isVisible = false
     }
     //funcion para ocultar layouts cuando se requiera
-    private fun hideLayouts(){
+    private fun ocultarLayouts(){
         var lyMap = findViewById<LinearLayout>(R.id.lyMap)
         var lyFragmentMap = findViewById<LinearLayout>(R.id.lyFragmentMap)
         val lyIntervalModeSpace = findViewById<LinearLayout>(R.id.lyIntervalModeSpace)
@@ -307,9 +308,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
 
-        setHeightLinearLayout(lyMap, 0)
-        setHeightLinearLayout(lyIntervalModeSpace,0)
-        setHeightLinearLayout(lyChallengesSpace,0)
+        establecerAlturaLinearLayout(lyMap, 0)
+        establecerAlturaLinearLayout(lyIntervalModeSpace,0)
+        establecerAlturaLinearLayout(lyChallengesSpace,0)
 
 
         lyFragmentMap.translationY = -300f
@@ -410,7 +411,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 tvRunningTime.text = getFormattedStopWatch((csbRunWalk.progress.toInt() *1000).toLong()).subSequence(3,8)
                 tvWalkingTime.text = getFormattedStopWatch(((ROUND_INTERVAL- csbRunWalk.progress.toInt())*1000).toLong()).subSequence(3,8) //obtener la resta de caminar y correr
-                TIME_RUNNING = getSecFromWatch(tvRunningTime.text.toString())
+                TIME_RUNNING = obtenerSegDelReloj(tvRunningTime.text.toString())
             }
 
             override fun onStopTrackingTouch(seekBar: CircularSeekBar) {
@@ -480,13 +481,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun iniciarObjetos(){
         iniciarCronometro()
-        hideLayouts()
+        ocultarLayouts()
         initMedallas()
         iniciarMetricas()
         initSwitchs()
         iniciarModoIntervalo()
         iniciarModoDesafio()
-        hidePopUpRun()
+        ocultarVentanaEmergente()
         initMap()
         initTotales()
         initNiveles()
@@ -523,23 +524,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     //iniciar los totales en 0 para el usuario que no tenga registros
     private fun initTotales(){
-        totalesBicileta = Totales()
+        totalesBicicleta = Totales()
 
-        carrerasTotales = Totales()
+        totalesCarrera = Totales()
 
-        totalesBicileta.totalCarreras = 0
-        totalesBicileta.totalDistancia = 0.0
-        totalesBicileta.totalTiempo = 0
-        totalesBicileta.recordDistancia = 0.0
-        totalesBicileta.recordVelocidad = 0.0
-        totalesBicileta.recordVelocidadPromedio = 0.0
+        totalesBicicleta.totalCarreras = 0
+        totalesBicicleta.totalDistancia = 0.0
+        totalesBicicleta.totalTiempo = 0
+        totalesBicicleta.recordDistancia = 0.0
+        totalesBicicleta.recordVelocidad = 0.0
+        totalesBicicleta.recordVelocidadPromedio = 0.0
 
-    carrerasTotales.totalCarreras = 0
-    carrerasTotales.totalDistancia = 0.0
-    carrerasTotales.totalTiempo = 0
-    carrerasTotales.recordDistancia = 0.0
-    carrerasTotales.recordVelocidad = 0.0
-    carrerasTotales.recordVelocidadPromedio = 0.0
+        totalesCarrera.totalCarreras = 0
+        totalesCarrera.totalDistancia = 0.0
+        totalesCarrera.totalTiempo = 0
+        totalesCarrera.recordDistancia = 0.0
+        totalesCarrera.recordVelocidad = 0.0
+        totalesCarrera.recordVelocidadPromedio = 0.0
 
     }
 //inicializar las variables con los datos que tiene que tener al inicio
@@ -691,8 +692,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if (document.data?.size != null){//si el documento tiene datos lo guardamos
                     var total = document.toObject(Totales::class.java)
                     when (deporte){
-                        "Bicicleta" -> totalesBicileta = total!!
-                        "Carrera" -> carrerasTotales = total!!
+                        "Bicicleta" -> totalesBicicleta = total!!
+                        "Carrera" -> totalesCarrera = total!!
                     }
 
                 }
@@ -748,12 +749,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     //establecer el nivel de bicicleta
     private fun setNivelBicicleta(){
         var lyNavLevelBike = findViewById<LinearLayout>(R.id.lyNavLevelBike)
-        if (totalesBicileta.totalTiempo!! == 0) setHeightLinearLayout(lyNavLevelBike, 0)//si el tiempo es 0 ocultamos el layout
+        if (totalesBicicleta.totalTiempo!! == 0) establecerAlturaLinearLayout(lyNavLevelBike, 0)//si el tiempo es 0 ocultamos el layout
         else{//si hay valores lo mostramos con sus valores correspondientes
-            setHeightLinearLayout(lyNavLevelBike, 300)
+            establecerAlturaLinearLayout(lyNavLevelBike, 300)
             for (nivel in listaNivelBicicleta){
-                if (totalesBicileta.totalCarreras!! < nivel.objetivoCarreras!!//verificar los requisitos de carrera
-                    || totalesBicileta.totalDistancia!! < nivel.objetivoDeDistancia!!){
+                if (totalesBicicleta.totalCarreras!! < nivel.objetivoCarreras!!//verificar los requisitos de carrera
+                    || totalesBicicleta.totalDistancia!! < nivel.objetivoDeDistancia!!){
 
                     nivelBicicleta.nombre = nivel.nombre!!
                     nivelBicicleta.imagen = nivel.imagen!!
@@ -774,7 +775,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             tvNumberLevelBike.text = levelText
 
-            var tt = getFormattedTotalTime(totalesBicileta.totalTiempo!!.toLong())
+            var tt = obtenerTiempoTotalFormateado(totalesBicicleta.totalTiempo!!.toLong())
             tvTotalTimeBike.text = tt
 
             when (nivelBicicleta.imagen){
@@ -784,23 +785,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 "level_4" -> ivLevelBike.setImageResource(R.drawable.leopardo)
 
             }
-            tvTotalRunsBike.text = "${totalesBicileta.totalCarreras}/${nivelBicicleta.objetivoCarreras}"
-            var porcent = totalesBicileta.totalDistancia!!.toInt() * 100 / nivelBicicleta.objetivoDeDistancia!!.toInt()
+            tvTotalRunsBike.text = "${totalesBicicleta.totalCarreras}/${nivelBicicleta.objetivoCarreras}"
+            var porcent = totalesBicicleta.totalDistancia!!.toInt() * 100 / nivelBicicleta.objetivoDeDistancia!!.toInt()
             tvTotalDistanceBike.text = "${porcent.toInt()}%"
 
             var csbDistanceBike = findViewById<CircularSeekBar>(R.id.csbDistanceBike)
             csbDistanceBike.max = nivelBicicleta.objetivoDeDistancia!!.toFloat()
-            if (totalesBicileta.totalDistancia!! >= nivelBicicleta.objetivoDeDistancia!!.toDouble())
+            if (totalesBicicleta.totalDistancia!! >= nivelBicicleta.objetivoDeDistancia!!.toDouble())
                 csbDistanceBike.progress = csbDistanceBike.max
             else
-                csbDistanceBike.progress = totalesBicileta.totalDistancia!!.toFloat()
+                csbDistanceBike.progress = totalesBicicleta.totalDistancia!!.toFloat()
 
             var csbRunsBike = findViewById<CircularSeekBar>(R.id.csbRunsBike)
             csbRunsBike.max = nivelBicicleta.objetivoCarreras!!.toFloat()
-            if (totalesBicileta.totalCarreras!! >= nivelBicicleta.objetivoCarreras!!.toInt())
+            if (totalesBicicleta.totalCarreras!! >= nivelBicicleta.objetivoCarreras!!.toInt())
                 csbRunsBike.progress = csbRunsBike.max
             else
-                csbRunsBike.progress = totalesBicileta.totalCarreras!!.toFloat()
+                csbRunsBike.progress = totalesBicicleta.totalCarreras!!.toFloat()
 
         }
     }
@@ -808,13 +809,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     //establecer el nivel de carrera
     private fun setNivelCarrera(){
         var lyNavLevelRunning = findViewById<LinearLayout>(R.id.lyNavLevelRunning)
-        if (carrerasTotales.totalTiempo!! == 0) setHeightLinearLayout(lyNavLevelRunning, 0)//si el usuario es nuevo ocultamos el layout
+        if (totalesCarrera.totalTiempo!! == 0) establecerAlturaLinearLayout(lyNavLevelRunning, 0)//si el usuario es nuevo ocultamos el layout
         else{
 
-            setHeightLinearLayout(lyNavLevelRunning, 300)
+            establecerAlturaLinearLayout(lyNavLevelRunning, 300)
             for (level in listaNivelCarrera){
-                if (carrerasTotales.totalCarreras!! < level.objetivoCarreras!!.toInt()
-                    || carrerasTotales.totalDistancia!! < level.objetivoDeDistancia!!.toDouble()){
+                if (totalesCarrera.totalCarreras!! < level.objetivoCarreras!!.toInt()
+                    || totalesCarrera.totalDistancia!! < level.objetivoDeDistancia!!.toDouble()){
 
                     nivelCorriendo.nombre = level.nombre!!
                     nivelCorriendo.imagen = level.imagen!!
@@ -835,7 +836,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             var levelText = "${getString(R.string.level)} ${nivelCorriendo.imagen!!.subSequence(6,7).toString()}"
             tvNumberLevelRunning.text = levelText
 
-            var tt = getFormattedTotalTime(carrerasTotales.totalTiempo!!.toLong())
+            var tt = obtenerTiempoTotalFormateado(totalesCarrera.totalTiempo!!.toLong())
             tvTotalTimeRunning.text = tt
 
             when (nivelCorriendo.imagen){
@@ -846,23 +847,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             }
 
-            tvTotalRunsRunning.text = "${carrerasTotales.totalCarreras}/${nivelCorriendo.objetivoCarreras}"
-            var porcent = carrerasTotales.totalDistancia!!.toInt() * 100 / nivelCorriendo.objetivoDeDistancia!!.toInt()
+            tvTotalRunsRunning.text = "${totalesCarrera.totalCarreras}/${nivelCorriendo.objetivoCarreras}"
+            var porcent = totalesCarrera.totalDistancia!!.toInt() * 100 / nivelCorriendo.objetivoDeDistancia!!.toInt()
             tvTotalDistanceRunning.text = "${porcent.toInt()}%"
 
             var csbDistanceRunning = findViewById<CircularSeekBar>(R.id.csbDistanceRunning)
             csbDistanceRunning.max = nivelCorriendo.objetivoDeDistancia!!.toFloat()
-            if (carrerasTotales.totalDistancia!! >= nivelCorriendo.objetivoDeDistancia!!.toDouble())
+            if (totalesCarrera.totalDistancia!! >= nivelCorriendo.objetivoDeDistancia!!.toDouble())
                 csbDistanceRunning.progress = csbDistanceRunning.max
             else
-                csbDistanceRunning.progress = carrerasTotales.totalDistancia!!.toFloat()
+                csbDistanceRunning.progress = totalesCarrera.totalDistancia!!.toFloat()
 
             var csbRunsRunning = findViewById<CircularSeekBar>(R.id.csbRunsRunning)
             csbRunsRunning.max = nivelCorriendo.objetivoCarreras!!.toFloat()
-            if (carrerasTotales.totalCarreras!! >= nivelCorriendo.objetivoCarreras!!.toInt())
+            if (totalesCarrera.totalCarreras!! >= nivelCorriendo.objetivoCarreras!!.toInt())
                 csbRunsRunning.progress = csbRunsRunning.max
             else
-                csbRunsRunning.progress = carrerasTotales.totalCarreras!!.toFloat()
+                csbRunsRunning.progress = totalesCarrera.totalCarreras!!.toFloat()
 
         }
     }
@@ -979,12 +980,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val lyChallenges = findViewById<LinearLayout>(R.id.lyChallenges)
         if (swChallenges.isChecked){
             animateViewofInt(swChallenges, "textColor", ContextCompat.getColor(this, R.color.verde_oscuro), 50)
-            setHeightLinearLayout(lyChallengesSpace, 750)
+            establecerAlturaLinearLayout(lyChallengesSpace, 750)
             animateViewofFloat(lyChallenges, "translationY", 0f, 500)
         }
         else{
             swChallenges.setTextColor(ContextCompat.getColor(this, R.color.white))
-            setHeightLinearLayout(lyChallengesSpace,0)
+            establecerAlturaLinearLayout(lyChallengesSpace,0)
             lyChallenges.translationY = -300f
             //llevar el control de distancia y tiempo de la carrera
             challengeDistance = 0f
@@ -997,11 +998,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
-        if (lyPopupRun.isVisible) {
+        if (lyVentanaEmergente.isVisible) {
             cerrarVentanaCorredor()
         } else if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START)
-        } else if (timeInSeconds > 0L) {
+        } else if (tiempoEnSegundos > 0L) {
             resetClicked()
         } else {
             alertSignOut() // Aquí puedes poner lógica para cerrar app
@@ -1133,7 +1134,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         var seconds: String = ss.toString()
         if (ss<10) seconds = "0"+seconds
 
-        challengeDuration = getSecFromWatch("${hours}:${minutes}:${seconds}")
+        challengeDuration = obtenerSegDelReloj("${hours}:${minutes}:${seconds}")
     }
 
 
@@ -1142,10 +1143,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_item_record -> llamarRecordActivity()
             R.id.nav_item_clearpreferences -> alertaLimpiarPreferencias()
             R.id.nav_item_signout -> singOut()
+            R.id.nav_item_offer -> llamarAnuncio()
         }
         drawer.closeDrawer(GravityCompat.START)
 
         return true
+    }
+
+    //funcion para ir a la pagina de UTH
+    private fun llamarAnuncio(){
+        val url = "https://www.uth.hn/" // URL hacia UTH
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        try {
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(this, "No se pudo abrir el navegador", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun llamarRecordActivity() {
@@ -1165,7 +1178,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         if (swIntervalMode.isChecked){
             animateViewofInt(swIntervalMode, "textColor", ContextCompat.getColor(this, R.color.verde_oscuro), 50)
-            setHeightLinearLayout(lyIntervalModeSpace, 600)
+            establecerAlturaLinearLayout(lyIntervalModeSpace, 600)
             animateViewofFloat(lyIntervalMode, "translationY", 0f, 500)
             animateViewofFloat (tvChrono, "translationX", -110f, 500)
             tvRounds.setText(R.string.rounds)
@@ -1173,11 +1186,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
             var tvRunningTime = findViewById<TextView>(R.id.tvRunningTime)
-            TIME_RUNNING = getSecFromWatch(tvRunningTime.text.toString())//capturamos los segundos de la propiedad text
+            TIME_RUNNING = obtenerSegDelReloj(tvRunningTime.text.toString())//capturamos los segundos de la propiedad text
         }
         else{
             swIntervalMode.setTextColor(ContextCompat.getColor(this, R.color.white))
-            setHeightLinearLayout(lyIntervalModeSpace,0)
+            establecerAlturaLinearLayout(lyIntervalModeSpace,0)
             lyIntervalMode.translationY = -200f
             animateViewofFloat (tvChrono, "translationX", 0f, 500)
             tvRounds.text = ""
@@ -1185,15 +1198,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private var chronometer: Runnable = object : Runnable {
+    private var cronometro: Runnable = object : Runnable {
         override fun run() {
             try{
                 if (swIntervalMode.isChecked){
-                    checkStopRun(timeInSeconds)
-                    checkNewRound(timeInSeconds)
+                    checkStopRun(tiempoEnSegundos)
+                    checkNewRound(tiempoEnSegundos)
                 }
 
-                timeInSeconds += 1
+                tiempoEnSegundos += 1
                 updateStopWatchView()
             } finally {
                 mHandler!!.postDelayed(this, mInterval.toLong())
@@ -1233,6 +1246,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         else updateProgressBarRound(Secs)
     }
+
+
     private fun checkNewRound(Secs: Long){
         if (Secs.toInt() % ROUND_INTERVAL == 0 && Secs.toInt() > 0){
             val tvRounds: TextView = findViewById(R.id.tvRounds) as TextView
@@ -1305,7 +1320,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             init_lt = mLastLocation.latitude
             init_ln = mLastLocation.longitude
 
-            if (timeInSeconds > 0L) registerNewLocation(mLastLocation)
+            if (tiempoEnSegundos > 0L) registerNewLocation(mLastLocation)
         }
     }
 //registramos la nueva ubicacion
@@ -1314,7 +1329,7 @@ private fun registerNewLocation(location: Location){
     var new_longitude: Double = location.longitude
 
     if (flagSavedLocation){
-        if (timeInSeconds >= INTERVAL_LOCATION){
+        if (tiempoEnSegundos >= INTERVAL_LOCATION){
             var distanceInterval = calcularDistancia(new_latitude, new_longitude)
             //verificar que la distancia no sea la que se acepta por defecto
             if ( distanceInterval <= LIMITE_DISTANCIA_ACEPTADA){
@@ -1501,7 +1516,7 @@ private fun registerNewLocation(location: Location){
         dirName = dirName.replace("/", "")
         dirName = dirName.replace(":", "")
 
-        var docName = timeInSeconds.toString()
+        var docName = tiempoEnSegundos.toString()
         while (docName.length < 4) docName = "0" + docName
 
         var ms: Boolean
@@ -1530,7 +1545,7 @@ private fun registerNewLocation(location: Location){
         id = id.replace(":", "")
         id = id.replace("/", "")
 
-        var lyPopUpRun = findViewById<LinearLayout>(R.id.lyPopupRun)
+        var lyVentanaEmergente = findViewById<LinearLayout>(R.id.lyPopupRun)
 
         var currentRun = Carreras()
         currentRun.distancia = roundNumber(distance.toString(),1).toDouble()
@@ -1538,15 +1553,12 @@ private fun registerNewLocation(location: Location){
         currentRun.maxSpeed = roundNumber(maxSpeed.toString(),1).toDouble()
         currentRun.duracion = tvChrono.text.toString()
 
-        deleteRunAndLinkedData(id, deporteSeleccionado, lyPopUpRun, currentRun)
+        deleteRunAndLinkedData(id, deporteSeleccionado, lyVentanaEmergente, currentRun)
        cargarMedallasUsuario()
        establecerNivelDeporte(deporteSeleccionado)
        cerrarVentanaCorredor()
 
     }
-
-
-
     //crear polilineas para la ruta del mapa
     private fun crearPolilineas(listPosition: Iterable<LatLng>){
         val polylineOptions = PolylineOptions()
@@ -1586,7 +1598,7 @@ private fun registerNewLocation(location: Location){
         //convertirmos m/s a km/h multiplicando por 3.6
         speed = ((d * 1000) / INTERVAL_LOCATION) * 3.6
         if (speed > maxSpeed) maxSpeed = speed
-        avgSpeed = ((distance * 1000) / timeInSeconds) * 3.6
+        avgSpeed = ((distance * 1000) / tiempoEnSegundos) * 3.6
     }
 //refrescar los datos de la interfaz
     private fun refrescarDatosDeInterfaz(){
@@ -1611,11 +1623,9 @@ private fun registerNewLocation(location: Location){
             csbCurrentSpeed.max = csbRecordSpeed.max
         }
     }
-
-
     //solicitar los permisos de la ubicacion
     private fun manageStartStop(){
-        if (timeInSeconds == 0L && isLocationEnabled() == false){//enviar una alerta para pedir al usuario que active el gps
+        if (tiempoEnSegundos == 0L && isLocationEnabled() == false){//enviar una alerta para pedir al usuario que active el gps
             AlertDialog.Builder(this)
                 .setTitle(getString(R.string.alertActivationGPSTitle))
                 .setMessage(getString(R.string.alertActivationGPSDescription))
@@ -1683,7 +1693,7 @@ private fun registerNewLocation(location: Location){
     //manegar los controles de la carrera inicio y detencion
     private fun manageRun(){
 
-        if (timeInSeconds.toInt() == 0){
+        if (tiempoEnSegundos.toInt() == 0){
             //obtenemos la fecha del dispositivo
             fechaCarrera = SimpleDateFormat("yyyy/MM/dd").format(Date())
             inicioTiempoCarrera = SimpleDateFormat("HH:mm:ss").format(Date())
@@ -1755,14 +1765,14 @@ private fun registerNewLocation(location: Location){
     // iniciar la carrera
     private fun startTime(){
         mHandler = Handler(Looper.getMainLooper())
-        chronometer.run()
+        cronometro.run()
     }
     //detener la carrera
     private fun stopTime(){
-        mHandler?.removeCallbacks(chronometer)
+        mHandler?.removeCallbacks(cronometro)
     }
     private fun updateStopWatchView(){
-        tvChrono.text = getFormattedStopWatch(timeInSeconds * 1000)
+        tvChrono.text = getFormattedStopWatch(tiempoEnSegundos * 1000)
     }
     //reiniciamos el cronometro finalizamos la carrera y reiniciamos la interfaz
     private fun resetClicked(){
@@ -1788,10 +1798,20 @@ private fun registerNewLocation(location: Location){
         var guardarAvgSpeed = roundNumber(avgSpeed.toString(),1)
         var guardarMaxSpeed = roundNumber(maxSpeed.toString(),1)
 
-        var centerLatitude = (minLatitude!! + maxLatitude!!) / 2
-        var centerLongitude = (minLongitude!! + maxLongitude!!) / 2
+        val centerLatitude = if (minLatitude != null && maxLatitude != null) {
+            (minLatitude!! + maxLatitude!!) / 2
+        } else {
+            0.0
+        }
 
-        var medalDistance = "none"
+        val centerLongitude = if (minLongitude != null && maxLongitude != null) {
+            (minLongitude!! + maxLongitude!!) / 2
+        } else {
+            0.0
+        }
+
+
+    var medalDistance = "none"
         var medalAvgSpeed = "none"
         var medalMaxSpeed = "none"
 
@@ -1854,7 +1874,7 @@ private fun registerNewLocation(location: Location){
     private fun actualizarTotalesUsuario(){
         totalesDeporteSeleccionado.totalCarreras = totalesDeporteSeleccionado.totalCarreras!! + 1
         totalesDeporteSeleccionado.totalDistancia = totalesDeporteSeleccionado.totalDistancia!! + distance
-        totalesDeporteSeleccionado.totalTiempo = totalesDeporteSeleccionado.totalTiempo!! + timeInSeconds.toInt()
+        totalesDeporteSeleccionado.totalTiempo = totalesDeporteSeleccionado.totalTiempo!! + tiempoEnSegundos.toInt()
 
         if (distance > totalesDeporteSeleccionado.recordDistancia!!){
             totalesDeporteSeleccionado.recordDistancia = distance
@@ -1888,17 +1908,17 @@ private fun registerNewLocation(location: Location){
 
         when (deporteSeleccionado){
             "Bicicleta" -> {
-                totalesBicileta = totalesDeporteSeleccionado
+                totalesBicicleta = totalesDeporteSeleccionado
             }
             "Carrera" -> {
-                carrerasTotales = totalesDeporteSeleccionado
+                totalesCarrera = totalesDeporteSeleccionado
             }
         }
     }
 
     //reiniciar las variales del cronometro para que el usuario vuelva a iniciar la carrera
     private fun restablecerVariablesCarrera(){
-        timeInSeconds = 0
+        tiempoEnSegundos = 0
         rounds = 1
         activatedGPS=true
         challengeDistance=0f
@@ -1923,7 +1943,7 @@ private fun registerNewLocation(location: Location){
     //reiniciamos la vista del usuario
     private fun resetTimeView(){
 
-        initStopWatch()
+        iniciarVistaReloj()
         manageEnableButtonsRun(false, true)
 
         tvChrono.setTextColor(ContextCompat.getColor(this, R.color.white))
@@ -2006,7 +2026,7 @@ private fun registerNewLocation(location: Location){
                 else{
                     var lyMap = findViewById<LinearLayout>(R.id.lyMap)
                     if (lyMap.height > 0){
-                        setHeightLinearLayout(lyMap, 0)
+                        establecerAlturaLinearLayout(lyMap, 0)
 
                         var lyFragmentMap = findViewById<LinearLayout>(R.id.lyFragmentMap)
                         lyFragmentMap.translationY= -300f
@@ -2043,11 +2063,11 @@ private fun registerNewLocation(location: Location){
     }
 
     fun seleccionarBicicleta(v: View){
-        if (timeInSeconds.toInt() == 0) seleccionarDeporte("Bicicleta")
+        if (tiempoEnSegundos.toInt() == 0) seleccionarDeporte("Bicicleta")
     }
 
     fun seleccionarCorrer(v: View){
-        if (timeInSeconds.toInt() == 0) seleccionarDeporte("Carrera")
+        if (tiempoEnSegundos.toInt() == 0) seleccionarDeporte("Carrera")
     }
 
    private fun seleccionarDeporte(deporte: String){
@@ -2065,7 +2085,7 @@ private fun registerNewLocation(location: Location){
                 lySportRunning.setBackgroundColor(ContextCompat.getColor(mainContext, R.color.gray_medium))
 
                 nivelDeporteSeleccionado = nivelBicicleta
-                totalesDeporteSeleccionado = totalesBicileta
+                totalesDeporteSeleccionado = totalesBicicleta
 
                 medallalistaDeporteSeleccionadoDistancia = medallaListaBicicletaDistancia
                 medallalistaDeporteSeleccionadoAvgSpeed = medallaListaBicicletaAvgSpeed
@@ -2079,7 +2099,7 @@ private fun registerNewLocation(location: Location){
                 lySportRunning.setBackgroundColor(ContextCompat.getColor(mainContext, R.color.verde_oscuro))
 
                 nivelDeporteSeleccionado = nivelCorriendo
-                totalesDeporteSeleccionado = carrerasTotales
+                totalesDeporteSeleccionado = totalesCarrera
 
                 medallalistaDeporteSeleccionadoDistancia = medallaListaCarreraDistancia
                 medallalistaDeporteSeleccionadoAvgSpeed = medallalistaCarreraAvgSpeed
@@ -2137,13 +2157,13 @@ private fun registerNewLocation(location: Location){
             var ivOpenClose = findViewById<ImageView>(R.id.ivOpenClose)
             //verificar si el mapa esta desplegado o si necesita visualizarse
             if (lyMap.height == 0){
-                setHeightLinearLayout(lyMap, 1157)
+                establecerAlturaLinearLayout(lyMap, 1157)
                 animateViewofFloat(lyFragmentMap, "translationY", 0f, 0)
                 ivOpenClose.setRotation(180f)
             }
             else{
                 //ocultamos el mapa en caso de que este desplegado
-                setHeightLinearLayout(lyMap, 0)
+                establecerAlturaLinearLayout(lyMap, 0)
                 lyFragmentMap.translationY= -300f
                 ivOpenClose.setRotation(0f)
             }
@@ -2160,12 +2180,12 @@ private fun registerNewLocation(location: Location){
         TODO("Not yet implemented")
     }
 
-    //funcion para crear la ventana emergente
-    private fun hidePopUpRun(){
+    //funcion para ocultar la ventana emergente mientras se usa la aplicacion sin finalizar carrera
+    private fun ocultarVentanaEmergente(){
         var lyWindow = findViewById<LinearLayout>(R.id.lyWindow)
         lyWindow.translationX = 400f //sacar fuera de la pantalla el layout
-        lyPopupRun = findViewById(R.id.lyPopupRun)
-        lyPopupRun.isVisible = false
+        lyVentanaEmergente = findViewById(R.id.lyPopupRun)
+        lyVentanaEmergente.isVisible = false
     }
 
     //funcion para mostrar la ventana cuando se finalice la carera
@@ -2173,7 +2193,7 @@ private fun registerNewLocation(location: Location){
         var rlMain = findViewById<RelativeLayout>(R.id.rlMain)
         rlMain.isEnabled = false
 
-        lyPopupRun.isVisible = true
+        lyVentanaEmergente.isVisible = true
 
         var lyWindow = findViewById<LinearLayout>(R.id.lyWindow)
         ObjectAnimator.ofFloat(lyWindow, "translationX", 0f ).apply {
@@ -2255,7 +2275,7 @@ private fun registerNewLocation(location: Location){
 
         }
 
-        var formatedTime = getFormattedTotalTime(totalesDeporteSeleccionado.totalTiempo!!.toLong())
+        var formatedTime = obtenerTiempoTotalFormateado(totalesDeporteSeleccionado.totalTiempo!!.toLong())
         tvTotalTime.text = getString(R.string.PopUpTotalTime) + formatedTime
     }
     private fun mostrarMedallas(){
@@ -2290,7 +2310,7 @@ private fun registerNewLocation(location: Location){
         cerrarVentanaCorredor()
     }
     private fun cerrarVentanaCorredor(){
-        hidePopUpRun()
+        ocultarVentanaEmergente()
         var rlMain = findViewById<RelativeLayout>(R.id.rlMain)
         rlMain.isEnabled = true//habilitamos la ventana principal
         restablecerVariablesCarrera()
@@ -2312,50 +2332,50 @@ private fun registerNewLocation(location: Location){
         var tvMinUnevennessRun = findViewById<TextView>(R.id.tvMinUnevennessRun)
         var tvAvgSpeedRun = findViewById<TextView>(R.id.tvAvgSpeedRun)
         var tvMaxSpeedRun = findViewById<TextView>(R.id.tvMaxSpeedRun)
-    var lyCurrentDatas = findViewById<LinearLayout>(R.id.lyCurrentDatas)
+        var lyCurrentDatas = findViewById<LinearLayout>(R.id.lyCurrentDatas)
 
-    if(activatedGPS){
-        //lyCurrentDatas.visibility = View.VISIBLE
-        lyCurrentDatas.getLayoutParams().height = LinearLayout.LayoutParams.WRAP_CONTENT 
-    }
-    else {
-        //lyCurrentDatas.visibility = View.GONE
-        lyCurrentDatas.getLayoutParams().height = 0
-    }
-    lyCurrentDatas.requestLayout() //necesario para refrescar la pantalla
+        if(activatedGPS){
+            //lyCurrentDatas.visibility = View.VISIBLE
+            lyCurrentDatas.getLayoutParams().height = LinearLayout.LayoutParams.WRAP_CONTENT
+        }
+        else {
+            //lyCurrentDatas.visibility = View.GONE
+            lyCurrentDatas.getLayoutParams().height = 0
+        }
+        lyCurrentDatas.requestLayout() //necesario para refrescar la pantalla
 
-    tvDurationRun.setText(tvChrono.text)
-    if (challengeDuration > 0){
-        setHeightLinearLayout(lyChallengeDurationRun, 120)
-        tvChallengeDurationRun.setText(getFormattedStopWatch((challengeDuration*1000).toLong()))
-    }
-    else  setHeightLinearLayout(lyChallengeDurationRun, 0)
+        tvDurationRun.setText(tvChrono.text)
+        if (challengeDuration > 0){
+            establecerAlturaLinearLayout(lyChallengeDurationRun, 120)
+            tvChallengeDurationRun.setText(getFormattedStopWatch((challengeDuration*1000).toLong()))
+        }
+        else  establecerAlturaLinearLayout(lyChallengeDurationRun, 0)
 
-    if (swIntervalMode.isChecked){
-        setHeightLinearLayout(lyIntervalRun, 120)
-        var details: String = "${npDurationInterval.value}mins. ("
-        details += "${tvRunningTime.text} / ${tvWalkingTime.text})"
+        if (swIntervalMode.isChecked){
+            establecerAlturaLinearLayout(lyIntervalRun, 120)
+            var details: String = "${npDurationInterval.value}mins. ("
+            details += "${tvRunningTime.text} / ${tvWalkingTime.text})"
 
-        tvIntervalRun.setText(details)
-    }
-    else setHeightLinearLayout(lyIntervalRun, 0)
+            tvIntervalRun.setText(details)
+        }
+        else establecerAlturaLinearLayout(lyIntervalRun, 0)
 
-    tvDistanceRun.setText(roundNumber(distance.toString(), 2))
-    if (challengeDistance > 0f){
-        setHeightLinearLayout(lyChallengeDistancePopUp, 120)
-        tvChallengeDistanceRun.setText(challengeDistance.toString())
-    }
-    else setHeightLinearLayout(lyChallengeDistancePopUp, 0)
+        tvDistanceRun.setText(roundNumber(distance.toString(), 2))
+        if (challengeDistance > 0f){
+            establecerAlturaLinearLayout(lyChallengeDistancePopUp, 120)
+            tvChallengeDistanceRun.setText(challengeDistance.toString())
+        }
+        else establecerAlturaLinearLayout(lyChallengeDistancePopUp, 0)
 
-    if (maxAltitude == null) setHeightLinearLayout(lyUnevennessRun, 0)
-    else{
-        setHeightLinearLayout(lyUnevennessRun, 120)
-        tvMaxUnevennessRun.setText(maxAltitude!!.toInt().toString())
-        tvMinUnevennessRun.setText(minAltitude!!.toInt().toString())
-    }
+        if (maxAltitude == null) establecerAlturaLinearLayout(lyUnevennessRun, 0)
+        else{
+            establecerAlturaLinearLayout(lyUnevennessRun, 120)
+            tvMaxUnevennessRun.setText(maxAltitude!!.toInt().toString())
+            tvMinUnevennessRun.setText(minAltitude!!.toInt().toString())
+        }
 
-    tvAvgSpeedRun.setText(roundNumber(avgSpeed.toString(), 1))
-    tvMaxSpeedRun.setText(roundNumber(maxSpeed.toString(), 1))
+        tvAvgSpeedRun.setText(roundNumber(avgSpeed.toString(), 1))
+        tvMaxSpeedRun.setText(roundNumber(maxSpeed.toString(), 1))
 
     }
 
@@ -2367,50 +2387,6 @@ private fun registerNewLocation(location: Location){
         }
         startActivity(intent)
     }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_run -> {
-                Toast.makeText(this, "Correr seleccionado", Toast.LENGTH_SHORT).show()
-                return true
-            }
-            R.id.action_history -> {
-                llamarRecordActivity()
-                return true
-            }
-            R.id.action_premium -> {
-                Toast.makeText(this, "Hazte Premium seleccionado", Toast.LENGTH_SHORT).show()
-                return true
-            }
-            R.id.action_clear_prefs -> {
-                alertaLimpiarPreferencias()
-                return true
-            }
-            R.id.action_logout -> {
-                singOut()
-                return true
-            }
-            R.id.action_ad_settings -> {
-                val url = "https://www.uth.hn/" // URL hacia UTH
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                try {
-                    startActivity(intent)
-                } catch (e: ActivityNotFoundException) {
-                    Toast.makeText(this, "No se pudo abrir el navegador", Toast.LENGTH_SHORT).show()
-                }
-                return true
-            }
-
-
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
 
 
 }

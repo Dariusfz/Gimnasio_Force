@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Gimasio_Force</string>
+    <string name="appNombre">Gimasio_Force</string>
     <string name="email">Email</string>
     <string name="password">Contraseña</string>
     <string name="forgotPassword">Olvidaste tu contraseña?</string>

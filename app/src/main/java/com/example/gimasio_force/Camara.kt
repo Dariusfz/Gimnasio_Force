@@ -12,7 +12,6 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.webkit.MimeTypeMap
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraInfoUnavailableException
@@ -25,8 +24,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toFile
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.gimasio_force.LoginActivity.Companion.useremail
@@ -207,7 +204,7 @@ class Camara : AppCompatActivity() {
 
     }
     private fun takePhoto(){
-        FILENAME = getString(R.string.app_name) + useremail + dateRun + startTimeRun //creamos el nombre del archivo
+        FILENAME = getString(R.string.appNombre) + useremail + dateRun + startTimeRun //creamos el nombre del archivo
         FILENAME = FILENAME.replace(":", "")
         FILENAME = FILENAME.replace("/", "")
 
