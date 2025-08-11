@@ -3,6 +3,8 @@ package com.example.gimasio_force
 import android.Manifest
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ActivityNotFoundException
 import android.content.ContentValues
 import android.content.Context
@@ -13,6 +15,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -251,9 +254,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         tvRounds.text = getString(R.string.rounds)
 
         mainContext=this
-
-        val navigationView: NavigationView = findViewById(R.id.nav_view)
-        navigationView.setNavigationItemSelectedListener(this)
 
         // Inicializar componentes basicos
         iniciarObjetos()
@@ -1201,6 +1201,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var cronometro: Runnable = object : Runnable {
         override fun run() {
             try{
+
+                if (activatedGPS && tiempoEnSegundos.toInt() % INTERVAL_LOCATION == 0) manageLocation()
+
                 if (swIntervalMode.isChecked){
                     checkStopRun(tiempoEnSegundos)
                     checkNewRound(tiempoEnSegundos)
@@ -1299,6 +1302,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 PackageManager.PERMISSION_GRANTED
     }
 //obtener los datos de la ubicacion
+
     @SuppressLint("MissingPermission")
     private fun requestNewLocationData(){
         var mLocationRequest = com.google.android.gms.location.LocationRequest()
@@ -1323,63 +1327,58 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (tiempoEnSegundos > 0L) registerNewLocation(mLastLocation)
         }
     }
-//registramos la nueva ubicacion
-private fun registerNewLocation(location: Location){
-    var new_latitude: Double = location.latitude
-    var new_longitude: Double = location.longitude
 
-    if (flagSavedLocation){
-        if (tiempoEnSegundos >= INTERVAL_LOCATION){
-            var distanceInterval = calcularDistancia(new_latitude, new_longitude)
-            //verificar que la distancia no sea la que se acepta por defecto
-            if ( distanceInterval <= LIMITE_DISTANCIA_ACEPTADA){
-                updateSpeeds(distanceInterval)
-                refrescarDatosDeInterfaz()
+    private fun registerNewLocation(location: Location){
+        var new_latitude: Double = location.latitude
+        var new_longitude: Double = location.longitude
 
+        if (flagSavedLocation){
+            if (tiempoEnSegundos >= INTERVAL_LOCATION){
+                var distanceInterval = calcularDistancia(new_latitude, new_longitude)
+                //verificar que la distancia no sea la que se acepta por defecto
+                if ( distanceInterval <= LIMITE_DISTANCIA_ACEPTADA){
+                    updateSpeeds(distanceInterval)
+                    refrescarDatosDeInterfaz()
+                    saveLocation(location)
 
+                    var newPos = LatLng (new_latitude, new_longitude)
+                    (listPoints as ArrayList<LatLng>).add(newPos)
+                    crearPolilineas(listPoints)
 
-                saveLocation(location)
-
-                var newPos = LatLng (new_latitude, new_longitude)
-                (listPoints as ArrayList<LatLng>).add(newPos)
-                crearPolilineas(listPoints)
-
-                verificarMedallas(distance, avgSpeed, maxSpeed)
-
-
+                }
 
             }
-
         }
-    }
-    latitude = new_latitude
-    longitude = new_longitude
+        latitude = new_latitude
+        longitude = new_longitude
 
-    if (mapCentered == true) centrarMapa(latitude, longitude)
+        if (mapCentered == true) centrarMapa(latitude, longitude)
 
-    if (minLatitude == null){
-        minLatitude = latitude
-        maxLatitude = latitude
-        minLongitude = longitude
-        maxLongitude = longitude
-    }
-    if (latitude < minLatitude!!) minLatitude = latitude
-    if (latitude > maxLatitude!!) maxLatitude = latitude
-    if (longitude < minLongitude!!) minLongitude = longitude
-    if (longitude > maxLongitude!!) maxLongitude = longitude
-
-    if (location.hasAltitude()){
-        if (maxAltitude == null){
-            maxAltitude = location.altitude
-            minAltitude = location.altitude
+        if (minLatitude == null){
+            minLatitude = latitude
+            maxLatitude = latitude
+            minLongitude = longitude
+            maxLongitude = longitude
         }
-        if (location.latitude > maxAltitude!!) maxAltitude = location.altitude
-        if (location.latitude < minAltitude!!) minAltitude = location.altitude
+        if (latitude < minLatitude!!) minLatitude = latitude
+        if (latitude > maxLatitude!!) maxLatitude = latitude
+        if (longitude < minLongitude!!) minLongitude = longitude
+        if (longitude > maxLongitude!!) maxLongitude = longitude
+
+        if (location.hasAltitude()){
+            if (maxAltitude == null){
+                maxAltitude = location.altitude
+                minAltitude = location.altitude
+            }
+            if (location.latitude > maxAltitude!!) maxAltitude = location.altitude
+            if (location.latitude < minAltitude!!) minAltitude = location.altitude
+        }
+
     }
 
-}
 
-    private fun verificarMedallas(d: Double, aS: Double, mS: Double){
+
+  /*  private fun verificarMedallas(d: Double, aS: Double, mS: Double){
         if (d>0){
             if (d >= medallalistaDeporteSeleccionadoDistancia.get(0)){
                 recDistanceGold = true; recDistanceSilver = false; recDistanceBronze = false
@@ -1497,7 +1496,9 @@ private fun registerNewLocation(location: Location){
             notify(notificationId, builder.build())
         }
 
-    }
+    }*/
+
+
     private fun restablecerMedallas(){
         recDistanceGold = false
         recDistanceSilver = false
@@ -1586,7 +1587,7 @@ private fun registerNewLocation(location: Location){
         val va2 = 2 * Math.atan2(Math.sqrt(va1), Math.sqrt(1 - va1))
         var n_distance =  radioTierra * va2
 
-        //if (n_distance < LIMIT_DISTANCE_ACCEPTED) distance += n_distance
+       // if (n_distance < LIMITE_DISTANCIA_ACEPTADA) distance += n_distance
 
         distance += n_distance //acumular la distancia total
         return n_distance
@@ -1601,7 +1602,7 @@ private fun registerNewLocation(location: Location){
         avgSpeed = ((distance * 1000) / tiempoEnSegundos) * 3.6
     }
 //refrescar los datos de la interfaz
-    private fun refrescarDatosDeInterfaz(){
+   /* private fun refrescarDatosDeInterfaz(){
         var tvCurrentDistance = findViewById<TextView>(R.id.tvCurrentDistance)
         var tvCurrentAvgSpeed = findViewById<TextView>(R.id.tvCurrentAvgSpeed)
         var tvCurrentSpeed = findViewById<TextView>(R.id.tvCurrentSpeed)
@@ -1622,7 +1623,30 @@ private fun registerNewLocation(location: Location){
 
             csbCurrentSpeed.max = csbRecordSpeed.max
         }
+    }*/
+
+    private fun refrescarDatosDeInterfaz() {
+        runOnUiThread {
+            val tvCurrentDistance = findViewById<TextView>(R.id.tvCurrentDistance)
+            val tvCurrentAvgSpeed = findViewById<TextView>(R.id.tvCurrentAvgSpeed)
+            val tvCurrentSpeed = findViewById<TextView>(R.id.tvCurrentSpeed)
+
+            tvCurrentDistance.text = roundNumber(distance.toString(), 2)
+            tvCurrentAvgSpeed.text = roundNumber(avgSpeed.toString(), 1)
+            tvCurrentSpeed.text = roundNumber(speed.toString(), 1)
+
+            // Actualizar los CircularSeekBar
+            csbCurrentDistance.progress = distance.toFloat()
+            csbCurrentAvgSpeed.progress = avgSpeed.toFloat()
+            csbCurrentSpeed.progress = speed.toFloat()
+
+            if (speed == maxSpeed) {
+                csbCurrentMaxSpeed.progress = speed.toFloat()
+            }
+        }
     }
+
+
     //solicitar los permisos de la ubicacion
     private fun manageStartStop(){
         if (tiempoEnSegundos == 0L && isLocationEnabled() == false){//enviar una alerta para pedir al usuario que active el gps
@@ -1643,6 +1667,8 @@ private fun registerNewLocation(location: Location){
         }
         else manageRun()
     }
+
+
     //verificar si la ubicacion esta habilitada
     private fun isLocationEnabled(): Boolean{
         var locationManager: LocationManager
@@ -1776,6 +1802,7 @@ private fun registerNewLocation(location: Location){
     }
     //reiniciamos el cronometro finalizamos la carrera y reiniciamos la interfaz
     private fun resetClicked(){
+
         guardarPreferencias()
         guardarDatosCarrera()
         mostrarVentanaEmergente()
@@ -1798,7 +1825,10 @@ private fun registerNewLocation(location: Location){
         var guardarAvgSpeed = roundNumber(avgSpeed.toString(),1)
         var guardarMaxSpeed = roundNumber(maxSpeed.toString(),1)
 
-        val centerLatitude = if (minLatitude != null && maxLatitude != null) {
+      var centerLatitude = (minLatitude!! + maxLatitude!!) / 2
+      var centerLongitude = (minLongitude!! + maxLongitude!!) / 2
+
+      /*  val centerLatitude = if (minLatitude != null && maxLatitude != null) {
             (minLatitude!! + maxLatitude!!) / 2
         } else {
             0.0
@@ -1808,7 +1838,8 @@ private fun registerNewLocation(location: Location){
             (minLongitude!! + maxLongitude!!) / 2
         } else {
             0.0
-        }
+        }*/
+
 
 
     var medalDistance = "none"

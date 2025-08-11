@@ -270,12 +270,7 @@ fun animateViewofFloat(v: View, attr: String, value: Float, time: Long){
     }
 
     private fun borrarCarrera(idRun: String, sport: String, ly: LinearLayout) {
-        val builder = AlertDialog.Builder(MainActivity.mainContext) // 'this' es el contexto (Activity)
 
-        builder.setTitle("Confirmar eliminación")
-        builder.setMessage("¿Estás seguro de que quieres eliminar esta carrera? Esta acción no se puede deshacer.")
-
-        builder.setPositiveButton("Sí") { _, _ ->
             // Aquí se borra la carrera si confirma
             val dbRun = FirebaseFirestore.getInstance()
             dbRun.collection("carreras$sport").document(idRun)
@@ -290,11 +285,7 @@ fun animateViewofFloat(v: View, attr: String, value: Float, time: Long){
                         ly.setBackgroundColor(Color.CYAN)
                     }.show()
                 }
-        }
 
-        builder.setNegativeButton("No",null)
-
-        builder.show()
     }
 
 }

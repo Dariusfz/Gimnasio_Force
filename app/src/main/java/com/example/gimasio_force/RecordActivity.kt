@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import android.widget.RadioGroup
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -21,7 +22,6 @@ import com.google.firebase.firestore.Query
 class RecordActivity : AppCompatActivity() {
 
     private var deporteSeleccionado : String = "Carrera"
-
     private lateinit var ivBike : ImageView
     private lateinit var ivRunning: ImageView
 
@@ -70,7 +70,6 @@ class RecordActivity : AppCompatActivity() {
         super.onPause()
         runsArrayList.clear()
     }
-
 
 
      //inflamos el recurso de order by al menu
